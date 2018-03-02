@@ -155,3 +155,9 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# NON GENERATED CONTENT
+
+# Idea leftovers:
+.idea/misc.xml
+.idea/roboteam-tactic-builder.iml
