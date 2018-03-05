@@ -1,0 +1,37 @@
+/* Enable full height*/
+html,
+body {
+  height: 100%;
+}
+
+/* Navigation */
+.navbar-roboteam {
+  color: white;
+  background-color: #E2231A !important;
+}
+
+/* Buttons */
+.btn-roboteam-outline-inverted {
+  color: white;
+  background-color: transparent;
+  border-color: white;
+}
+
+.btn-roboteam-outline-inverted:hover {
+  background-color: white;
+  color: #E2231A;
+}
+
+/* Flex-grow */
+.flex-grow {
+  flex-grow: 1;
+}
+
+/* TODO Remove these in production*/
+#panel-1 {
+  background: #777;
+}
+
+#panel-2 {
+  background: #999;
+}
