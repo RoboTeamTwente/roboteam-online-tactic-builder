@@ -1,3 +1,13 @@
+/*
+CSS for the RoboTeam theme
+
+Created by Dirk Koelewijn <d.koelewijn@student.utwente.nl> for the
+RoboTeam Twente as part of the Design Project for the Bachelor
+Technical Computer Science of the University of Twente.
+
+All Rights Reserved.
+*/
+
 /* Enable full height*/
 html,
 body {
@@ -70,14 +80,4 @@ body {
 
 .panel-show-other, .panel-switch {
   display: none;
-}
-
-
-/* TODO Remove these in production*/
-#panel-1 {
-  background: #777;
-}
-
-#panel-2 {
-  background: #999;
 }
