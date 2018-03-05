@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'custom',
     'pages',
     'connections',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
