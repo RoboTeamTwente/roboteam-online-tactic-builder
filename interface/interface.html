@@ -15,7 +15,7 @@
 
   <title>RoboTeam Tactic Simulator</title>
 </head>
-<body class="d-flex flex-column">
+<body class="d-flex flex-column" id="root">
 
 <!-- Action bar (= navigation bar)-->
 <nav
@@ -39,12 +39,47 @@
 </nav>
 
 <!--Panel container-->
-<div class="d-flex flex-grow flex-row">
-  <div id="panel-1" class="flex-grow">
-
+<div class="panel-container">
+  <div class="panel" id="panel-editor">
+    <div class="panel-menu">
+      <div class="panel-title">Behavior editor</div>
+      <div class="panel-action-bar">
+        <span class="panel-action panel-show-other">
+          Show Simulation
+        </span>
+        <span class="panel-action panel-switch">
+          Switch to Simulation
+        </span>
+        <span class="panel-action panel-hide">
+          Hide
+        </span>
+        <span class="panel-action panel-fullscreen">
+          Full Screen
+        </span>
+      </div>
+    </div>
+    <div class="panel-content"> Content</div>
   </div>
-  <div id="panel-2" class="flex-grow">
-    Panel 2
+
+  <div class="panel" id="panel-simulation">
+    <div class="panel-menu">
+      <div class="panel-title">Simulation</div>
+      <div class="panel-action-bar">
+        <span class="panel-action panel-show-other">
+          Show Editor
+        </span>
+        <span class="panel-action panel-switch">
+          Switch to Editor
+        </span>
+        <span class="panel-action panel-hide">
+          Hide
+        </span>
+        <span class="panel-action panel-fullscreen">
+          Full Screen
+        </span>
+      </div>
+    </div>
+    <div class="panel-content" style="background: gray"> Content</div>
   </div>
 </div>
 
@@ -52,5 +87,39 @@
 <!-- Optional JavaScript -->
 <script src="static/js/jquery-3.3.1.min.js"></script>
 <script src="static/js/bootstrap.min.js"></script>
+<script>
+
+  $(".panel-hide, .panel-switch").click(function (event) {
+    showOtherPanel($(event.target).closest(".panel"));
+  });
+
+  $(".panel-fullscreen").click(function (event) {
+    showSinglePanel($(event.target).closest(".panel"));
+  });
+
+  $(".panel-show-other").click(function (event) {
+    showAllPanels();
+  });
+
+
+  function showAllPanels() {
+    $(".panel-fullscreen, .panel-hide").css("display", "inline");
+    $(".panel").show();
+    $(".panel-show-other, .panel-switch").hide();
+  }
+
+  function showSinglePanel(panel) {
+    $(".panel, .panel-fullscreen, .panel-hide").hide();
+    $(panel).show();
+    $(".panel-show-other, .panel-switch").css("display", "inline");
+  }
+
+  function showOtherPanel(thisPanel) {
+    $(".panel").show();
+    $(".panel-fullscreen, .panel-hide").hide();
+    $(thisPanel).hide();
+    $(".panel-show-other, .panel-switch").css("display", "inline");
+  }
+</script>
 </body>
 </html>

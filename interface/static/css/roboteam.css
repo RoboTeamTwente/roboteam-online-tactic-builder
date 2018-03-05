@@ -27,6 +27,52 @@ body {
   flex-grow: 1;
 }
 
+.panel-container {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+}
+
+/* Panels */
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.panel-menu {
+  background: #333;
+  padding: 5px;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  vertical-align: middle;
+}
+
+.panel-title {
+  font-size: large;
+}
+
+.panel-action-bar {
+  vertical-align: center;
+}
+
+.panel-action {
+  font-size: small;
+  padding: 0 5px;
+  cursor: pointer;
+}
+
+.panel-content {
+  flex-grow: 1;
+}
+
+.panel-show-other, .panel-switch {
+  display: none;
+}
+
+
 /* TODO Remove these in production*/
 #panel-1 {
   background: #777;
