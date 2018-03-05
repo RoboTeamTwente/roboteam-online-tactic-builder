@@ -1,0 +1,114 @@
+<!--
+Main HTML view for the application
+
+Created by Dirk Koelewijn <d.koelewijn@student.utwente.nl> for the
+RoboTeam Twente as part of the Design Project for the Bachelor
+Technical Computer Science of the University of Twente.
+
+All Rights Reserved.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous"/>
+
+  <!-- Custom CSS for RoboTeam theme -->
+  <link rel="stylesheet"
+        href="static/css/roboteam.css"/>
+
+  <!-- jQuery -->
+  <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+
+  <!-- JS for the panels -->
+  <script src="static/js/panels.js"></script>
+
+  <title>RoboTeam Tactic Simulator</title>
+</head>
+<body class="d-flex flex-column" id="root">
+
+<!-- Navigation / action bar-->
+<nav
+    class="navbar navbar-dark navbar-expand-md bg-dark navbar-roboteam justify-content-center">
+  <a class="navbar-brand w-50 mr-auto">
+    <img src="static/img/logo.svg" height="50px">
+    Tactic Simulator
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+          data-target="#collapsingNavbar3">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+    <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted">Run
+          Simulation
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!--Panel container-->
+<div class="panel-container">
+
+  <!-- Editor panel-->
+  <div class="panel" id="panel-editor">
+    <div class="panel-menu">
+      <div class="panel-title">Behavior editor</div>
+      <div class="panel-action-bar">
+        <span class="panel-action panel-show-other">
+          Show Simulation
+        </span>
+        <span class="panel-action panel-switch">
+          Switch to Simulation
+        </span>
+        <span class="panel-action panel-hide">
+          Hide
+        </span>
+        <span class="panel-action panel-full-screen">
+          Full Screen
+        </span>
+      </div>
+    </div>
+    <div class="panel-content"> Content</div>
+  </div>
+
+  <!-- Simulation panel -->
+  <div class="panel" id="panel-simulation">
+    <div class="panel-menu">
+      <div class="panel-title">Simulation</div>
+      <div class="panel-action-bar">
+        <span class="panel-action panel-show-other">
+          Show Editor
+        </span>
+        <span class="panel-action panel-switch">
+          Switch to Editor
+        </span>
+        <span class="panel-action panel-hide">
+          Hide
+        </span>
+        <span class="panel-action panel-full-screen">
+          Full Screen
+        </span>
+      </div>
+    </div>
+    <div class="panel-content" style="background: gray"> Content</div>
+  </div>
+
+</div>
+
+</body>
+</html>
