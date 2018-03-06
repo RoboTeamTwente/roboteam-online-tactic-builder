@@ -32,8 +32,7 @@ All Rights Reserved.
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
 
-  <!-- JS for the panels -->
-  <script src="static/js/panels.js"></script>
+
 
   <title>RoboTeam Tactic Simulator</title>
 </head>
@@ -109,6 +108,28 @@ All Rights Reserved.
   </div>
 
 </div>
+
+<!-- JS for the panels -->
+<script src="static/js/panels.js">
+
+  // Bind hide and switch buttons
+  $(".panel-hide, .panel-switch").click(function (event) {
+    console.log("Hide");
+    showOtherPanel($(event.target).closest(".panel"));
+  });
+
+  // Bind full screen buttons
+  $(".panel-full-screen").click(function (event) {
+    console.log("Full-screen");
+    showSinglePanel($(event.target).closest(".panel"));
+  });
+
+  // Bind show other buttons
+  $(".panel-show-other").click(function () {
+    console.log("Show other");
+    showAllPanels();
+  });
+</script>
 
 </body>
 </html>

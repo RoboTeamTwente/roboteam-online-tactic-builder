@@ -81,3 +81,7 @@ body {
 .panel-show-other, .panel-switch {
   display: none;
 }
+
+iframe {
+  border: none;
+}

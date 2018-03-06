@@ -8,22 +8,6 @@ Technical Computer Science of the University of Twente.
 All Rights Reserved.
 */
 
-
-// Bind hide and switch buttons
-$(".panel-hide, .panel-switch").click(function (event) {
-  showOtherPanel($(event.target).closest(".panel"));
-});
-
-// Bind full screen buttons
-$(".panel-full-screen").click(function (event) {
-  showSinglePanel($(event.target).closest(".panel"));
-});
-
-// Bind show other buttons
-$(".panel-show-other").click(function () {
-  showAllPanels();
-});
-
 /**
  * Function to show all panels
  */
