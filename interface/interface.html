@@ -32,17 +32,41 @@ All Rights Reserved.
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
 
+  <!-- JS for the panels -->
+  <script src="static/js/panels.js"></script>
+
+  <!-- JS for the simulation-->
+  <script src="static/js/simulation.js"></script>
+
+  <!-- Bind views to actions-->
+  <script>
+    $(function () {
+      // Bind hide and switch buttons
+      $(".panel-hide, .panel-switch").click(function (event) {
+        showOtherPanel($(event.target).closest(".panel"));
+      });
+
+      // Bind full screen buttons
+      $(".panel-full-screen").click(function (event) {
+        showSinglePanel($(event.target).closest(".panel"));
+      });
+
+      // Bind show other buttons
+      $(".panel-show-other").click(function () {
+        showAllPanels();
+      });
+
+      $("#btnRunSimulation").click(function () {
+        runSimulation();
+      });
+    })
+  </script>
+
+  <!-- Custom scripts for the Editor-->
+  <!--<script src="static/js/simulation.js"></script>-->
 
 
   <title>RoboTeam Tactic Simulator</title>
-  <script type="text/javascript" src = "../b3js/js/functions.js"></script>
-  <script type="text/javascript">
-      function loadJSON() {
-          var view = document.getElementById("b3js-editor").contentWindow.app.view;
-          saveJSON(view.exportToJSON(), 'tree');
-      }
-  </script>
-
 </head>
 <body class="d-flex flex-column" id="root">
 
@@ -60,7 +84,8 @@ All Rights Reserved.
   <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
     <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
       <li class="nav-item">
-        <button type="button" class="btn btn-roboteam-outline-inverted" onclick="loadJSON()">Run
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+                id="btnRunSimulation">Run
           Simulation
         </button>
       </li>
@@ -117,25 +142,7 @@ All Rights Reserved.
 
 </div>
 
-<!-- JS for the panels -->
-<script src="static/js/panels.js">
-  $.ready(function () {
-    // Bind hide and switch buttons
-    $(".panel-hide, .panel-switch").click(function (event) {
-      showOtherPanel($(event.target).closest(".panel"));
-    });
 
-    // Bind full screen buttons
-    $(".panel-full-screen").click(function (event) {
-      showSinglePanel($(event.target).closest(".panel"));
-    });
-
-    // Bind show other buttons
-    $(".panel-show-other").click(function () {
-      showAllPanels();
-    });
-  });
-</script>
 
 </body>
 </html>
