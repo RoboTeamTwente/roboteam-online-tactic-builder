@@ -111,23 +111,21 @@ All Rights Reserved.
 
 <!-- JS for the panels -->
 <script src="static/js/panels.js">
+  $.ready(function () {
+    // Bind hide and switch buttons
+    $(".panel-hide, .panel-switch").click(function (event) {
+      showOtherPanel($(event.target).closest(".panel"));
+    });
 
-  // Bind hide and switch buttons
-  $(".panel-hide, .panel-switch").click(function (event) {
-    console.log("Hide");
-    showOtherPanel($(event.target).closest(".panel"));
-  });
+    // Bind full screen buttons
+    $(".panel-full-screen").click(function (event) {
+      showSinglePanel($(event.target).closest(".panel"));
+    });
 
-  // Bind full screen buttons
-  $(".panel-full-screen").click(function (event) {
-    console.log("Full-screen");
-    showSinglePanel($(event.target).closest(".panel"));
-  });
-
-  // Bind show other buttons
-  $(".panel-show-other").click(function () {
-    console.log("Show other");
-    showAllPanels();
+    // Bind show other buttons
+    $(".panel-show-other").click(function () {
+      showAllPanels();
+    });
   });
 </script>
 
