@@ -1,5 +1,5 @@
 """
-This class contains all the Consumers ( SyncConsumers as in
+This file contains all the Consumers ( SyncConsumers as in
 channels.readthedocs.io --> Consumers) that will handle all the asynchonous
 connections and all the asynchronous background tasks.
 """

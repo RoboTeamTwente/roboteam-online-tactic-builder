@@ -1,3 +1,10 @@
+"""
+This file contains all the Serializers that are responsible for enforcing
+the protocol. The ProtocolSerializer is the root of the protocol and will
+deligate all the action to the appropriate Serializers to let them handle
+their part.
+"""
+
 from rest_framework.serializers import Serializer, ChoiceField, DictField
 
 
