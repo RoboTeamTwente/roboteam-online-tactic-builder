@@ -1,8 +1,7 @@
 /*
 JS for panels
 
-Created by Dirk Koelewijn <d.koelewijn@student.utwente.nl> for the
-RoboTeam Twente as part of the Design Project for the Bachelor
+Created for the RoboTeam Twente as part of the Design Project for the Bachelor
 Technical Computer Science of the University of Twente.
 
 All Rights Reserved.
