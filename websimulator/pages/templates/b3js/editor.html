@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,10 +9,12 @@
 
   <title>Behavior3JS Editor</title>
 
-  <script type="text/javascript" src="../../static/b3js/js/preload.min.js"></script>
-  <link href="../../static/b3js/css/normalize.css" rel="stylesheet">
-  <link href="../../static/b3js/css/preload.css" rel="stylesheet">
-  <link href="../../static/b3js/css/editor.css" rel="stylesheet">
+  <script type="text/javascript"
+          src="{% static "b3js/js/preload.min.js" %}"></script>
+  <link href="{% static "b3js/css/normalize.css" %}"
+        rel="stylesheet">
+  <link href="{% static  "b3js/css/preload.css"%}" rel="stylesheet">
+  <link href="{% static "b3js/css/editor.css" %}" rel="stylesheet">
 
   <script type="text/javascript">
     var loader, app;
@@ -33,12 +37,12 @@
       });
       loader.loadManifest([
         // SCRIPT
-        {id:'', src:'img/closedhand.cur'},
-        {id:'', src:'js/b3core.0.1.0.min.js'},
-        {id:'', src:'js/b3view.0.1.0.min.js'},
-        {id:'', src:'js/b3editor.0.1.0.min.js'},
-        {id:'', src:'css/b3editor.0.1.0.min.css'},
-        {id:'view-all', src:'html/b3editor.0.1.0.min.html'},
+        {id:'', src:'{% static "b3js/img/closedhand.cur" %}'},
+        {id:'', src:'{% static "b3js/js/b3core.0.1.0.min.js" %}'},
+        {id:'', src:'{% static "b3js/js/b3view.0.1.0.min.js" %}'},
+        {id:'', src:'{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
+        {id:'', src:'{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
+        {id:'view-all', src:'{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
       ])
     }
   </script>
@@ -49,7 +53,7 @@
 
   <div id="preloading">
     <div class="content">
-      <img src="../../static/b3js/img/loading.gif" alt="Loading"/>
+      <img src="{% static "b3js/img/loading.gif" %}" alt="Loading"/>
       <p id="loading-text">Loading, please wait... <span id="loading-progress">0%</span></p>
     </div>
   </div>
