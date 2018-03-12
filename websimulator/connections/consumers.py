@@ -4,7 +4,7 @@ channels.readthedocs.io --> Consumers) that will handle all the asynchonous
 connections and all the asynchronous background tasks.
 """
 
-import os
+import subprocess
 import threading
 import json
 
@@ -14,7 +14,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
 from connections.exceptions import TreeException
-from .serializers import ProtocolSerializer, SimValuesSerializer, CustomNodesSerializer
+from .serializers import ProtocolSerializer, SimValuesSerializer
 
 
 class WsConnectionConsumer(JsonWebsocketConsumer):
@@ -141,6 +141,7 @@ class SimulateConsumer(SyncConsumer):
                 "json": {"text": "Started ROS"}
             }
         )
+
         grsim_thread = threading.Thread(target=start_grsim, name="grsim")
         grsim_thread.start()
         async_to_sync(self.channel_layer.send)(
@@ -150,6 +151,8 @@ class SimulateConsumer(SyncConsumer):
                 "json": {"text": "Started grSim"}
             }
         )
+
+
         tactic_thread = threading.Thread(target=start_tactic, name="tactic")
         tactic_thread.start()
         async_to_sync(self.channel_layer.send)(
@@ -165,32 +168,21 @@ def edit_tree(values):
     """
     Parse the new tree and insert this into the current project
     Assumes a project rtt_sander.b3 is already available in the mentioned location
-    with the right structure
     :param values: the newly created tree
 
     """
     tree = values["tree"]
-
-    custom_nodes = tree["custom_nodes"]
-    del tree["custom_nodes"]
-
     tree["title"] = "root"
 
+    result = {'data': {'trees': [tree]}}
+
     project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/rtt_sander.b3'
-    current_project = open(project_location, 'r')
-
-    new_data = ''
-    for line in current_project:
-        new_data += line
-
-    current_project_json = json.loads(new_data)
-    current_project_json['data']['trees'] = [tree]
-    current_project_json['data']['custom_nodes'] = custom_nodes
 
     new_project = open(project_location, 'w')
-    new_project.write(json.dumps(current_project_json))
+    new_project.write(json.dumps(result))
+    new_project.close()
 
-    os.system("cd ~/catkin_ws && catkin_make")
+    subprocess.run("cd ~/catkin_ws && catkin_make", shell=True)
 
 
 def start_ros():
@@ -199,7 +191,7 @@ def start_ros():
 
     TODO: Remove this as part of 0.1
     """
-    os.system("roslaunch roboteam_tactics RTTCore_grsim.launch")
+    subprocess.run("roslaunch roboteam_tactics RTTCore_grsim.launch", shell=True)
 
 
 def start_grsim():
@@ -208,7 +200,7 @@ def start_grsim():
 
     TODO: Remove this as part of 0.1
     """
-    os.system("~/catkin_ws/grSim/bin/grsim")
+    subprocess.run("~/catkin_ws/grSim/bin/grsim", shell=True)
 
 
 def start_tactic():
@@ -217,4 +209,4 @@ def start_tactic():
 
     TODO: Remove this as part of 0.1
     """
-    os.system("rosrun roboteam_tactics TestX rtt_sander/root")
+    subprocess.run("rosrun roboteam_tactics TestX rtt_sander/root", shell=True)
