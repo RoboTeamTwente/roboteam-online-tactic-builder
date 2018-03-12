@@ -6,11 +6,15 @@ connections and all the asynchronous background tasks.
 
 import os
 import threading
+import json
+
+from pathlib import Path
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
-from .serializers import ProtocolSerializer
+from connections.exceptions import TreeException
+from .serializers import ProtocolSerializer, SimValuesSerializer, CustomNodesSerializer
 
 
 class WsConnectionConsumer(JsonWebsocketConsumer):
@@ -20,12 +24,14 @@ class WsConnectionConsumer(JsonWebsocketConsumer):
     serializer and pass the message on to the protocol executer. It will
     also handle the incoming messages from background tasks.
     """
+
     class ErrorCodes:
         """
         In case something goes wrong it is appropriate to close the
         connection but let the user know what went wrong.
         """
         protocol_error = 3000
+        tree_error = 3001
 
     def __init__(self, *args, **kwargs):
         """
@@ -98,7 +104,8 @@ class ProtocolExecuter():
             "simulator",
             {
                 "type": "simulate",
-                "channel_name": self.consumer.channel_name
+                "channel_name": self.consumer.channel_name,
+                "values": values
             }
         )
 
@@ -122,6 +129,9 @@ class SimulateConsumer(SyncConsumer):
         :param message: The dictionary that was passed to the background by
         the ProtocolExecuter.
         """
+
+        edit_tree(message["values"])
+
         ros_thread = threading.Thread(target=start_ros, name="ros")
         ros_thread.start()
         async_to_sync(self.channel_layer.send)(
@@ -151,6 +161,38 @@ class SimulateConsumer(SyncConsumer):
         )
 
 
+def edit_tree(values):
+    """
+    Parse the new tree and insert this into the current project
+    Assumes a project rtt_sander.b3 is already available in the mentioned location
+    with the right structure
+    :param values: the newly created tree
+
+    """
+    tree = values["tree"]
+
+    custom_nodes = tree["custom_nodes"]
+    del tree["custom_nodes"]
+
+    tree["title"] = "root"
+
+    project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/rtt_sander.b3'
+    current_project = open(project_location, 'r')
+
+    new_data = ''
+    for line in current_project:
+        new_data += line
+
+    current_project_json = json.loads(new_data)
+    current_project_json['data']['trees'] = [tree]
+    current_project_json['data']['custom_nodes'] = custom_nodes
+
+    new_project = open(project_location, 'w')
+    new_project.write(json.dumps(current_project_json))
+
+    os.system("cd ~/catkin_ws && catkin_make")
+
+
 def start_ros():
     """
     Start ROS
@@ -175,5 +217,4 @@ def start_tactic():
 
     TODO: Remove this as part of 0.1
     """
-    os.system("rosrun roboteam_tactics TestX GoToPos int:ROBOT_ID=2 "
-              "double:xGoal=-2 double:yGoal=-2")
+    os.system("rosrun roboteam_tactics TestX rtt_sander/root")

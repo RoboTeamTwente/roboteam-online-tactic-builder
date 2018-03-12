@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.test import TestCase
 
 from connections.serializers import *
@@ -5,11 +7,50 @@ from connections.serializers import *
 
 class ProtocolSerializerTest(TestCase):
 
+    def test_nodes_presence(self):
+        data = {
+            "action": "SIM",
+            "values": {
+                "custom_nodes": []
+            }
+        }
+        serializer = ProtocolSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+
+    def test_custom_nodes_presence(self):
+        data = {
+            "action": "SIM",
+            "values": {
+                "nodes": {
+
+                }
+            }
+        }
+        serializer = ProtocolSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+
+    def test_tree_presence(self):
+        data = {
+            "action": "SIM",
+            "values": {
+
+            }
+        }
+        serializer = ProtocolSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+
     def test_sim(self):
         data = {
             "action": "SIM",
             "values": {
                 "tree": {
+                    "nodes": {
+
+                    },
+                    "custom_nodes": []
 
                 }
             }
@@ -18,9 +59,9 @@ class ProtocolSerializerTest(TestCase):
 
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data["action"], "SIM")
-        self.assertEqual(type(serializer.validated_data["values"]), dict)
+        self.assertEqual(type(serializer.validated_data["values"]), OrderedDict)
         self.assertEqual(type(serializer.validated_data["values"]["tree"]),
-                         dict)
+                         OrderedDict)
 
     def test_stop(self):
         data = {
