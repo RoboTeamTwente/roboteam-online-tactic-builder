@@ -7,24 +7,30 @@ from connections.serializers import *
 
 class ProtocolSerializerTest(TestCase):
 
-    def test_nodes_presence(self):
-        data = {
+    def test_root_presence(self):
+        data= {
             "action": "SIM",
             "values": {
-                "custom_nodes": []
+                "tree": {
+                    "nodes": {
+
+                    }
+                }
             }
         }
+
         serializer = ProtocolSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
 
-    def test_custom_nodes_presence(self):
+    def test_nodes_presence(self):
         data = {
             "action": "SIM",
             "values": {
-                "nodes": {
-
+                "tree": {
+                    "root": "x"
                 }
+
             }
         }
         serializer = ProtocolSerializer(data=data)
@@ -50,8 +56,7 @@ class ProtocolSerializerTest(TestCase):
                     "nodes": {
 
                     },
-                    "custom_nodes": []
-
+                    "root": "x"
                 }
             }
         }
