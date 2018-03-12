@@ -14,7 +14,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
 from connections.exceptions import TreeException
-from .serializers import ProtocolSerializer, TreeSerializer, CustomNodesSerializer
+from .serializers import ProtocolSerializer, SimValuesSerializer, CustomNodesSerializer
 
 
 class WsConnectionConsumer(JsonWebsocketConsumer):
@@ -170,8 +170,11 @@ def edit_tree(values):
 
     """
     tree = values["tree"]
-    custom_nodes = values["custom_nodes"]
 
+    custom_nodes = tree["custom_nodes"]
+    del tree["custom_nodes"]
+
+    tree["title"] = "root"
 
     project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/rtt_sander.b3'
     current_project = open(project_location, 'r')
