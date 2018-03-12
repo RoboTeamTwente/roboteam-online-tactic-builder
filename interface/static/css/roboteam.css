@@ -1,7 +1,8 @@
 /*
 CSS for the RoboTeam theme
 
-Created for the RoboTeam Twente as part of the Design Project for the Bachelor
+Created by Dirk Koelewijn <d.koelewijn@student.utwente.nl> for the
+RoboTeam Twente as part of the Design Project for the Bachelor
 Technical Computer Science of the University of Twente.
 
 All Rights Reserved.
@@ -79,8 +80,4 @@ body {
 
 .panel-show-other, .panel-switch {
   display: none;
-}
-
-iframe {
-  border: none;
 }
