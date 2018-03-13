@@ -5,7 +5,8 @@ connections and all the asynchronous background tasks.
 """
 
 import subprocess
-import threading
+import os
+import signal
 import json
 
 from pathlib import Path
@@ -13,8 +14,7 @@ from pathlib import Path
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
-from connections.exceptions import TreeException
-from .serializers import ProtocolSerializer, SimValuesSerializer
+from .serializers import ProtocolSerializer
 
 
 class WsConnectionConsumer(JsonWebsocketConsumer):
@@ -132,8 +132,7 @@ class SimulateConsumer(SyncConsumer):
 
         edit_tree(message["values"])
 
-        ros_thread = threading.Thread(target=start_ros, name="ros")
-        ros_thread.start()
+        ros = start_ros()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
             {
@@ -142,8 +141,7 @@ class SimulateConsumer(SyncConsumer):
             }
         )
 
-        grsim_thread = threading.Thread(target=start_grsim, name="grsim")
-        grsim_thread.start()
+        grsim = start_grsim()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
             {
@@ -153,8 +151,7 @@ class SimulateConsumer(SyncConsumer):
         )
 
 
-        tactic_thread = threading.Thread(target=start_tactic, name="tactic")
-        tactic_thread.start()
+        start_tactic()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
             {
@@ -162,6 +159,9 @@ class SimulateConsumer(SyncConsumer):
                 "json": {"text": "Started tactic"}
             }
         )
+
+        os.killpg(os.getpgid(grsim.pid), signal.SIGTERM)
+        os.killpg(os.getpgid(ros.pid), signal.SIGTERM)
 
 
 def edit_tree(values):
@@ -182,7 +182,7 @@ def edit_tree(values):
     new_project.write(json.dumps(result))
     new_project.close()
 
-    subprocess.run("cd ~/catkin_ws && catkin_make", shell=True)
+    return subprocess.run("cd ~/catkin_ws && catkin_make", shell=True, stdout=open(os.devnull, 'w'))
 
 
 def start_ros():
@@ -191,7 +191,8 @@ def start_ros():
 
     TODO: Remove this as part of 0.1
     """
-    subprocess.run("roslaunch roboteam_tactics RTTCore_grsim.launch", shell=True)
+    return subprocess.Popen("roslaunch roboteam_tactics RTTCore_grsim.launch", stdout=open(os.devnull, 'w'),
+                                  shell=True, preexec_fn=os.setsid)
 
 
 def start_grsim():
@@ -200,7 +201,8 @@ def start_grsim():
 
     TODO: Remove this as part of 0.1
     """
-    subprocess.run("~/catkin_ws/grSim/bin/grsim", shell=True)
+    return subprocess.Popen("~/catkin_ws/grSim/bin/grsim", stdout=open(os.devnull, 'w'),
+                                  shell=True, preexec_fn=os.setsid)
 
 
 def start_tactic():
@@ -209,4 +211,4 @@ def start_tactic():
 
     TODO: Remove this as part of 0.1
     """
-    subprocess.run("rosrun roboteam_tactics TestX rtt_sander/root", shell=True)
+    return subprocess.run("rosrun roboteam_tactics TestX rtt_sander/root", shell=True, stdout=open(os.devnull, 'w'))
