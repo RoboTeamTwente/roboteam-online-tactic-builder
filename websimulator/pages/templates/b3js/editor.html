@@ -4,62 +4,76 @@
 <html>
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 
-  <title>Behavior3JS Editor</title>
+    <title>Behavior3JS Editor</title>
 
-  <script type="text/javascript"
-          src="{% static "b3js/js/preload.min.js" %}"></script>
-  <link href="{% static "b3js/css/normalize.css" %}"
-        rel="stylesheet">
-  <link href="{% static  "b3js/css/preload.css"%}" rel="stylesheet">
-  <link href="{% static "b3js/css/editor.css" %}" rel="stylesheet">
+    <script type="text/javascript"
+            src="{% static " b3js
+    /js/preload.min.js" %}"></script>
+  <
+  link
+  href = "{% static "
+  b3js / css / normalize.css
+  " %}"
+  rel = "stylesheet" >
+      < link
+  href = "{% static  "
+  b3js / css / preload.css
+  "%}"
+  rel = "stylesheet" >
+      < link
+  href = "{% static "
+  b3js / css / editor.css
+  " %}"
+  rel = "stylesheet" >
 
-  <script type="text/javascript">
-    var loader, app;
+      < script
+  type = "text/javascript" >
+  var loader, app;
 
-    function preload() {
-      var domProgress = document.getElementById('loading-progress');
-      var domLoading = document.getElementById('loading-text');
-      
-      loader = new createjs.LoadQueue(true);
-      loader.on('progress', function(event) {
-        domProgress.innerHTML = Math.floor(event.progress*100)+'%';
-      });
-      loader.on('complete', function(event) {
-        domLoading.innerHTML = 'Initializing editor components, please wait...';
+  function preload() {
+    var domProgress = document.getElementById('loading-progress');
+    var domLoading = document.getElementById('loading-text');
 
-        app.initialize();
+    loader = new createjs.LoadQueue(true);
+    loader.on('progress', function (event) {
+      domProgress.innerHTML = Math.floor(event.progress * 100) + '%';
+    });
+    loader.on('complete', function (event) {
+      domLoading.innerHTML = 'Initializing editor components, please wait...';
 
-        // hide preload
-        $('#preloading').fadeOut(250);
-      });
-      loader.loadManifest([
-        // SCRIPT
-        {id:'', src:'{% static "b3js/img/closedhand.cur" %}'},
-        {id:'', src:'{% static "b3js/js/b3core.0.1.0.min.js" %}'},
-        {id:'', src:'{% static "b3js/js/b3view.0.1.0.min.js" %}'},
-        {id:'', src:'{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
-        {id:'', src:'{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
-        {id:'view-all', src:'{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
-      ])
-    }
-  </script>
+      app.initialize();
+
+      // hide preload
+      $('#preloading').fadeOut(250);
+    });
+    loader.loadManifest([
+      // SCRIPT
+      {id: '', src: '{% static "b3js/img/closedhand.cur" %}'},
+      {id: '', src: '{% static "b3js/js/b3core.0.1.0.min.js" %}'},
+      {id: '', src: '{% static "b3js/js/b3view.0.1.0.min.js" %}'},
+      {id: '', src: '{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
+      {id: '', src: '{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
+      {id: 'view-all', src: '{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
+    ])
+  }
+    </script>
 
 </head>
 
 <body onload="preload();">
 
-  <div id="preloading">
+<div id="preloading">
     <div class="content">
-      <img src="{% static "b3js/img/loading.gif" %}" alt="Loading"/>
-      <p id="loading-text">Loading, please wait... <span id="loading-progress">0%</span></p>
+        <img src="{% static " b3js/img/loading.gif" %}" alt="Loading"/>
+        <p id="loading-text">Loading, please wait... <span id="loading-progress">0%</span></p>
     </div>
-  </div>
+</div>
 
-  <div id="page">
-  </div>
+<div id="page">
+</div>
 
 </body>
 </html>

@@ -151,7 +151,6 @@ class SimulateConsumer(SyncConsumer):
             }
         )
 
-
         start_tactic()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
@@ -177,7 +176,8 @@ def edit_tree(values):
 
     result = {'data': {'trees': [tree]}}
 
-    project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/' + settings.PROJECT_NAME + ".b3"
+    project_location = str(
+        Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/' + settings.PROJECT_NAME + ".b3"
 
     new_project = open(project_location, 'w')
     new_project.write(json.dumps(result))
@@ -192,7 +192,7 @@ def start_ros():
 
     """
     return subprocess.Popen("roslaunch roboteam_tactics RTTCore_grsim.launch", stdout=open(os.devnull, 'w'),
-                                  shell=True, preexec_fn=os.setsid)
+                            shell=True, preexec_fn=os.setsid)
 
 
 def start_grsim():
@@ -201,7 +201,7 @@ def start_grsim():
 
     """
     return subprocess.Popen("~/catkin_ws/grSim/bin/grsim", stdout=open(os.devnull, 'w'),
-                                  shell=True, preexec_fn=os.setsid)
+                            shell=True, preexec_fn=os.setsid)
 
 
 def start_tactic():
@@ -209,4 +209,5 @@ def start_tactic():
     Start the predefined tactic
 
     """
-    return subprocess.run("rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME, shell=True, stdout=open(os.devnull, 'w'))
+    return subprocess.run("rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME,
+                          shell=True, stdout=open(os.devnull, 'w'))

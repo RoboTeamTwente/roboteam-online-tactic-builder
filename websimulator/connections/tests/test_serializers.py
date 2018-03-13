@@ -8,7 +8,7 @@ from connections.serializers import *
 class ProtocolSerializerTest(TestCase):
 
     def test_root_presence(self):
-        data= {
+        data = {
             "action": "SIM",
             "values": {
                 "tree": {
