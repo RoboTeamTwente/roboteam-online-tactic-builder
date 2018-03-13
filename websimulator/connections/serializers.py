@@ -7,6 +7,7 @@ their part.
 
 from rest_framework.serializers import Serializer, ChoiceField, DictField, CharField
 
+
 class TreeContentSerializer(Serializer):
     """
     The TreeContentSerializer is used to validate the incoming JSON object
