@@ -14,6 +14,7 @@ from pathlib import Path
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
+from websimulator import settings
 from .serializers import ProtocolSerializer
 
 
@@ -167,16 +168,16 @@ class SimulateConsumer(SyncConsumer):
 def edit_tree(values):
     """
     Parse the new tree and insert this into the current project
-    Assumes a project rtt_sander.b3 is already available in the mentioned location
+    Assumes a project rtt_tactics.b3 is already available in the mentioned location
     :param values: the newly created tree
 
     """
     tree = values["tree"]
-    tree["title"] = "root"
+    tree["title"] = settings.TREE_NAME
 
     result = {'data': {'trees': [tree]}}
 
-    project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/rtt_sander.b3'
+    project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/' + settings.PROJECT_NAME + ".b3"
 
     new_project = open(project_location, 'w')
     new_project.write(json.dumps(result))
@@ -189,7 +190,6 @@ def start_ros():
     """
     Start ROS
 
-    TODO: Remove this as part of 0.1
     """
     return subprocess.Popen("roslaunch roboteam_tactics RTTCore_grsim.launch", stdout=open(os.devnull, 'w'),
                                   shell=True, preexec_fn=os.setsid)
@@ -199,7 +199,6 @@ def start_grsim():
     """
     Start grSim
 
-    TODO: Remove this as part of 0.1
     """
     return subprocess.Popen("~/catkin_ws/grSim/bin/grsim", stdout=open(os.devnull, 'w'),
                                   shell=True, preexec_fn=os.setsid)
@@ -209,6 +208,5 @@ def start_tactic():
     """
     Start the predefined tactic
 
-    TODO: Remove this as part of 0.1
     """
-    return subprocess.run("rosrun roboteam_tactics TestX rtt_sander/root", shell=True, stdout=open(os.devnull, 'w'))
+    return subprocess.run("rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME, shell=True, stdout=open(os.devnull, 'w'))
