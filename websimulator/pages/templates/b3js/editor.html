@@ -4,113 +4,93 @@
 <html>
 <head>
 
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 
   <title>Behavior3JS Editor</title>
 
   <script type="text/javascript"
-          src="{% static " b3js
-  /js/preload.min.js" %}"></script>
-  <
-  link
-  href = "{% static "
-  b3js / css / normalize.css
-  " %}"
-  rel = "stylesheet" >
-    < link
-  href = "{% static  "
-  b3js / css / preload.css
-  "%}"
-  rel = "stylesheet" >
-    < link
-  href = "{% static "
-  b3js / css / editor.css
-  " %}"
-  rel = "stylesheet" >
+          src="{% static "b3js/js/preload.min.js" %}"></script>
+  <link href="{% static "b3js/css/normalize.css" %}"
+        rel="stylesheet">
+  <link href="{% static  "b3js/css/preload.css"%}" rel="stylesheet">
+  <link href="{% static "b3js/css/editor.css" %}" rel="stylesheet">
 
-    < script
-  type = "text/javascript" >
-  var loader, app;
+  <script type="text/javascript">
+    var loader, app;
 
-  var custom_nodes = [
-    [3, [ // Skills
-      "GetBall",
-      "GoToPos",
-      "RecieveBall",
-      "Failer",
-      "Succeeder",
-      //"Positioning", // (Deze skill is nog WIP, die moet later toegevoegd
-      // worden)
-      "Freeze",
-      "RandomDrive",
-      "Runner",
-      "ShootAway",
-      "SimpleDefender",
-      "Sleep",
-      "Twirl",
-      "Wander"
-    ]],
-    [2, [ // Conditions
-      "BallInsideField",
-      "BallOnOurSide",
-      "BallOnTheirSide",
-      "CanClaimBall",
-      "CanInterceptBall",
-      "CanKeeperMove",
-      "CanPassSafely",
-      "CanReachPoint",
-      "CanSeePoint",
-      "CanSeeRobot",
-      "CanSeeTheirGoal",
-      "DistanceXToY",
-      "IHaveBall",
-      "IsBallInDefenseArea",
-      "IsBallInGoal",
-      "IsBallInZone",
-      "TeamHasBall",
-      "TheyHaveBall",
-      "WeHaveBall"
-    ]],
-    [1, [ // Decorators
-      "Failer",
-      "Inverter",
-      "Repeat",
-      "Repeat Until Failure",
-      "Repeat Until Success",
-      "Succeeder",
-      "Limit @ Activations",
-      "Repeat @x",
-      "Max @ms"
-    ]],
-    [0, [ // Composites
-      "MemPriority",
-      "MemSequence",
-      "ParallelSequence",
-      "ParallelTactic",
-      "Priority",
-      "Sequence"
-    ]]
-  ];
+    var custom_nodes = [
+      [3, [ // Skills
+        "GetBall",
+        "GoToPos",
+        "RecieveBall",
+        "Failer",
+        "Succeeder",
+        //"Positioning", // (Deze skill is nog WIP, die moet later toegevoegd
+        // worden)
+        "Freeze",
+        "RandomDrive",
+        "Runner",
+        "ShootAway",
+        "SimpleDefender",
+        "Sleep",
+        "Twirl",
+        "Wander"
+      ]],
+      [2, [ // Conditions
+        "BallInsideField",
+        "BallOnOurSide",
+        "BallOnTheirSide",
+        "CanClaimBall",
+        "CanInterceptBall",
+        "CanKeeperMove",
+        "CanPassSafely",
+        "CanReachPoint",
+        "CanSeePoint",
+        "CanSeeRobot",
+        "CanSeeTheirGoal",
+        "DistanceXToY",
+        "IHaveBall",
+        "IsBallInDefenseArea",
+        "IsBallInGoal",
+        "IsBallInZone",
+        "TeamHasBall",
+        "TheyHaveBall",
+        "WeHaveBall"
+      ]],
+      [1, [ // Decorators
+        "Failer",
+        "Inverter",
+        "Repeat",
+        "Repeat Until Failure",
+        "Repeat Until Success",
+        "Succeeder",
+        "Limit @ Activations",
+        "Repeat @x",
+        "Max @ms"
+      ]],
+      [0, [ // Composites
+        "MemPriority",
+        "MemSequence",
+        "ParallelSequence",
+        "ParallelTactic",
+        "Priority",
+        "Sequence"
+      ]]
+    ];
 
-  function preload() {
-    var domProgress = document.getElementById('loading-progress');
-    var domLoading = document.getElementById('loading-text');
-
-    loader = new createjs.LoadQueue(true);
-    loader.on('progress', function (event) {
-      domProgress.innerHTML = Math.floor(event.progress * 100) + '%';
-    });
-    loader.on('complete', function (event) {
-      domLoading.innerHTML = 'Initializing editor components, please wait...';
+    function preload() {
+      var domProgress = document.getElementById('loading-progress');
+      var domLoading = document.getElementById('loading-text');
 
       loader = new createjs.LoadQueue(true);
-      loader.on('progress', function (event) {
-        domProgress.innerHTML = Math.floor(event.progress * 100) + '%';
+      loader.on('progress', function(event) {
+        domProgress.innerHTML = Math.floor(event.progress*100)+'%';
       });
-      loader.on('complete', function (event) {
+      loader.on('complete', function(event) {
         domLoading.innerHTML = 'Initializing editor components, please wait...';
+
+        app.initialize();
 
         app.helpers.addRoboNodes = function (roboNodes) {
           // Add some custom nodes to the editor, so they are available to the client.
@@ -144,61 +124,29 @@
       });
       loader.loadManifest([
         // SCRIPT
-        {id: '', src: '{% static "b3js/img/closedhand.cur" %}'},
-        {id: '', src: '{% static "b3js/js/b3core.0.1.0.min.js" %}'},
-        {id: '', src: '{% static "b3js/js/b3view.0.1.0.min.js" %}'},
-        {id: '', src: '{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
-        {id: '', src: '{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
-        {
-          id: 'view-all',
-          src: '{% static "b3js/html/b3editor.0.1.0.min.html" %}'
-        }
+        {id:'', src:'{% static "b3js/img/closedhand.cur" %}'},
+        {id:'', src:'{% static "b3js/js/b3core.0.1.0.min.js" %}'},
+        {id:'', src:'{% static "b3js/js/b3view.0.1.0.min.js" %}'},
+        {id:'', src:'{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
+        {id:'', src:'{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
+        {id:'view-all', src:'{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
       ])
     }
   </script>
 
-  // hide preload
-  $('#preloading').fadeOut(250);
-  });
-  loader.loadManifest([
-  // SCRIPT
-  {id: '', src: '{% static "b3js/img/closedhand.cur" %}'},
-  {id: '', src: '{% static "b3js/js/b3core.0.1.0.min.js" %}'},
-  {id: '', src: '{% static "b3js/js/b3view.0.1.0.min.js" %}'},
-  {id: '', src: '{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
-  {id: '', src: '{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
-  {id: 'view-all', src: '{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
-  ])
-  }
-  </script>
+</head>
 
-  <
-  /head>
+<body onload="preload();">
 
-  < body
-  onload = "preload();" >
+  <div id="preloading">
+    <div class="content">
+      <img src="{% static "b3js/img/loading.gif" %}" alt="Loading"/>
+      <p id="loading-text">Loading, please wait... <span id="loading-progress">0%</span></p>
+    </div>
+  </div>
 
-    < div
-  id = "preloading" >
-    < div
-  class
-  = "content" >
-    < img
-  src = "{% static "
-  b3js / img / loading.gif
-  " %}"
-  alt = "Loading" / >
-    < p
-  id = "loading-text" > Loading, please
-  wait... < span
-  id = "loading-progress" > 0 % < /span></
-  p >
-  < /div>
-  < /div>
+  <div id="page">
+  </div>
 
-  < div
-  id = "page" >
-    < /div>
-
-    < /body>
-    < /html>
+</body>
+</html>
