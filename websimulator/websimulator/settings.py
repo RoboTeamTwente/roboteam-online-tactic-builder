@@ -138,3 +138,8 @@ CHANNEL_LAYERS = {
 }
 
 # End channels specific configuration
+
+
+# Default project and tree name
+PROJECT_NAME = "rtt_tactics"
+TREE_NAME = "root"
