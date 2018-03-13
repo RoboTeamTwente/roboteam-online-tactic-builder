@@ -5,16 +5,8 @@ deligate all the action to the appropriate Serializers to let them handle
 their part.
 """
 
-from rest_framework.serializers import Serializer, ChoiceField, DictField, CharField, ListField
-
-
-class CustomNodesSerializer(Serializer):
-    """
-    The CustomNodesSerializer is used to validate the JSON object against the
-    minimal requirements of a custom nodes section.
-    """
-
-    custom_nodes = ListField()
+from rest_framework.serializers import Serializer, ChoiceField, DictField, \
+    CharField
 
 
 class TreeContentSerializer(Serializer):
@@ -23,7 +15,7 @@ class TreeContentSerializer(Serializer):
     against the requirements of the contents of a tree.
     """
     nodes = DictField()
-    custom_nodes = ListField()
+    root = CharField()
 
 
 class SimValuesSerializer(Serializer):

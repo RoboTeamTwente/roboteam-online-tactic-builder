@@ -4,17 +4,17 @@ channels.readthedocs.io --> Consumers) that will handle all the asynchonous
 connections and all the asynchronous background tasks.
 """
 
-import os
-import threading
 import json
-
+import os
+import signal
+import subprocess
 from pathlib import Path
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
-from connections.exceptions import TreeException
-from .serializers import ProtocolSerializer, SimValuesSerializer, CustomNodesSerializer
+from websimulator import settings
+from .serializers import ProtocolSerializer
 
 
 class WsConnectionConsumer(JsonWebsocketConsumer):
@@ -132,8 +132,7 @@ class SimulateConsumer(SyncConsumer):
 
         edit_tree(message["values"])
 
-        ros_thread = threading.Thread(target=start_ros, name="ros")
-        ros_thread.start()
+        ros = start_ros()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
             {
@@ -141,8 +140,8 @@ class SimulateConsumer(SyncConsumer):
                 "json": {"text": "Started ROS"}
             }
         )
-        grsim_thread = threading.Thread(target=start_grsim, name="grsim")
-        grsim_thread.start()
+
+        grsim = start_grsim()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
             {
@@ -150,8 +149,8 @@ class SimulateConsumer(SyncConsumer):
                 "json": {"text": "Started grSim"}
             }
         )
-        tactic_thread = threading.Thread(target=start_tactic, name="tactic")
-        tactic_thread.start()
+
+        start_tactic()
         async_to_sync(self.channel_layer.send)(
             message["channel_name"],
             {
@@ -160,61 +159,58 @@ class SimulateConsumer(SyncConsumer):
             }
         )
 
+        os.killpg(os.getpgid(grsim.pid), signal.SIGTERM)
+        os.killpg(os.getpgid(ros.pid), signal.SIGTERM)
+
 
 def edit_tree(values):
     """
     Parse the new tree and insert this into the current project
-    Assumes a project rtt_sander.b3 is already available in the mentioned location
-    with the right structure
+    Assumes a project rtt_tactics.b3 is already available in the mentioned location
     :param values: the newly created tree
 
     """
     tree = values["tree"]
+    tree["title"] = settings.TREE_NAME
 
-    custom_nodes = tree["custom_nodes"]
-    del tree["custom_nodes"]
+    result = {'data': {'trees': [tree]}}
 
-    tree["title"] = "root"
-
-    project_location = str(Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/rtt_sander.b3'
-    current_project = open(project_location, 'r')
-
-    new_data = ''
-    for line in current_project:
-        new_data += line
-
-    current_project_json = json.loads(new_data)
-    current_project_json['data']['trees'] = [tree]
-    current_project_json['data']['custom_nodes'] = custom_nodes
+    project_location = str(
+        Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/' + settings.PROJECT_NAME + ".b3"
 
     new_project = open(project_location, 'w')
-    new_project.write(json.dumps(current_project_json))
+    new_project.write(json.dumps(result))
+    new_project.close()
 
-    os.system("cd ~/catkin_ws && catkin_make")
+    return subprocess.run("cd ~/catkin_ws && catkin_make", shell=True,
+                          stdout=open(os.devnull, 'w'))
 
 
 def start_ros():
     """
     Start ROS
 
-    TODO: Remove this as part of 0.1
     """
-    os.system("roslaunch roboteam_tactics RTTCore_grsim.launch")
+    return subprocess.Popen("roslaunch roboteam_tactics RTTCore_grsim.launch",
+                            stdout=open(os.devnull, 'w'),
+                            shell=True, preexec_fn=os.setsid)
 
 
 def start_grsim():
     """
     Start grSim
 
-    TODO: Remove this as part of 0.1
     """
-    os.system("~/catkin_ws/grSim/bin/grsim")
+    return subprocess.Popen("~/catkin_ws/grSim/bin/grsim",
+                            stdout=open(os.devnull, 'w'),
+                            shell=True, preexec_fn=os.setsid)
 
 
 def start_tactic():
     """
     Start the predefined tactic
 
-    TODO: Remove this as part of 0.1
     """
-    os.system("rosrun roboteam_tactics TestX rtt_sander/root")
+    return subprocess.run(
+        "rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME,
+        shell=True, stdout=open(os.devnull, 'w'))
