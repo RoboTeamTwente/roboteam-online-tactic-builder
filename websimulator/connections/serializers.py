@@ -5,7 +5,8 @@ deligate all the action to the appropriate Serializers to let them handle
 their part.
 """
 
-from rest_framework.serializers import Serializer, ChoiceField, DictField, CharField
+from rest_framework.serializers import Serializer, ChoiceField, DictField, \
+    CharField
 
 
 class TreeContentSerializer(Serializer):

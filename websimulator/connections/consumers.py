@@ -4,11 +4,10 @@ channels.readthedocs.io --> Consumers) that will handle all the asynchonous
 connections and all the asynchronous background tasks.
 """
 
-import subprocess
+import json
 import os
 import signal
-import json
-
+import subprocess
 from pathlib import Path
 
 from asgiref.sync import async_to_sync
@@ -183,7 +182,8 @@ def edit_tree(values):
     new_project.write(json.dumps(result))
     new_project.close()
 
-    return subprocess.run("cd ~/catkin_ws && catkin_make", shell=True, stdout=open(os.devnull, 'w'))
+    return subprocess.run("cd ~/catkin_ws && catkin_make", shell=True,
+                          stdout=open(os.devnull, 'w'))
 
 
 def start_ros():
@@ -191,7 +191,8 @@ def start_ros():
     Start ROS
 
     """
-    return subprocess.Popen("roslaunch roboteam_tactics RTTCore_grsim.launch", stdout=open(os.devnull, 'w'),
+    return subprocess.Popen("roslaunch roboteam_tactics RTTCore_grsim.launch",
+                            stdout=open(os.devnull, 'w'),
                             shell=True, preexec_fn=os.setsid)
 
 
@@ -200,7 +201,8 @@ def start_grsim():
     Start grSim
 
     """
-    return subprocess.Popen("~/catkin_ws/grSim/bin/grsim", stdout=open(os.devnull, 'w'),
+    return subprocess.Popen("~/catkin_ws/grSim/bin/grsim",
+                            stdout=open(os.devnull, 'w'),
                             shell=True, preexec_fn=os.setsid)
 
 
@@ -209,5 +211,6 @@ def start_tactic():
     Start the predefined tactic
 
     """
-    return subprocess.run("rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME,
-                          shell=True, stdout=open(os.devnull, 'w'))
+    return subprocess.run(
+        "rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME,
+        shell=True, stdout=open(os.devnull, 'w'))

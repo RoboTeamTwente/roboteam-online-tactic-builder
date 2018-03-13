@@ -10,7 +10,10 @@ All Rights Reserved.
 
 function runSimulation() {
   var editor = document.getElementById("b3js-editor").contentWindow.app.view;
-  var myJSON = {"action": "SIM", "values": {"tree": JSON.parse(editor.exportToJSON())}};
+  var myJSON = {
+    "action": "SIM",
+    "values": {"tree": JSON.parse(editor.exportToJSON())}
+  };
 
   var ws = new WebSocket("ws://localhost:8000/");
   ws.onmessage = function (evt) {
