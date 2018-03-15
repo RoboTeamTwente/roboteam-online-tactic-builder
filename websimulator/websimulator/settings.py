@@ -126,7 +126,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [("localhost", 6379)]
         },
     },
 }
@@ -137,3 +137,7 @@ CHANNEL_LAYERS = {
 # Default project and tree name
 PROJECT_NAME = "rtt_tactics"
 TREE_NAME = "root"
+
+# grSim listener configuration
+MULTICAST_GROUP = '224.5.23.2'
+SERVER_ADDRESS = ('', 10037)
