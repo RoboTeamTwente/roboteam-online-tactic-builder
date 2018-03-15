@@ -116,6 +116,39 @@ class ProtocolExecuter():
         pass
 
 
+def update(frame: dict, commit: ssl_wrapper.SSL_WrapperPacket):
+    detection = commit.detection
+
+    if "frame_number" not in frame:
+        frame["frame_number"] = detection.frame_number
+        frame["ball"] = {}
+        frame["yellow_robots"] = {}
+        frame["blue_robots"] = {}
+
+    if len(detection.balls) > 0 and frame["ball"] == {}:
+        frame["ball"] = {
+            "x": detection.balls[0].x,
+            "y": detection.balls[0].y,
+            "z": detection.balls[0].z
+        }
+
+    for robot in detection.robots_yellow:
+        if robot.robot_id not in frame["yellow_robots"]:
+            frame["yellow_robots"][robot.robot_id] = {
+                "x": robot.x,
+                "y": robot.y
+            }
+
+    for robot in detection.robots_blue:
+        if robot.robot_id not in frame["blue_robots"]:
+            frame["blue_robots"][robot.robot_id] = {
+                "x": robot.x,
+                "y": robot.y
+            }
+
+    return frame
+
+
 class ListenerConsumer(SyncConsumer):
 
     def listen(self, message):
