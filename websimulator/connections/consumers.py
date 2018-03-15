@@ -8,7 +8,9 @@ import json
 import os
 import signal
 import subprocess
-import time
+import datetime
+import socket
+import struct
 from enum import Enum
 from pathlib import Path
 
@@ -17,6 +19,7 @@ from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
 from websimulator import settings
 from .serializers import ProtocolSerializer
+from .protobuf import messages_robocup_ssl_wrapper_pb2 as ssl_wrapper
 
 
 class WsConnectionConsumer(JsonWebsocketConsumer):
@@ -170,7 +173,41 @@ class ListenerConsumer(SyncConsumer):
             }
         )
 
-        time.sleep(10)
+        buffer = []
+        frame = {}
+        last_frame = 0
+        started = datetime.datetime.now()
+        while datetime.datetime.now() < started + datetime.timedelta(
+                seconds=20):
+            data, address = sock.recvfrom(16384)
+
+            wrapper_packet = ssl_wrapper.SSL_WrapperPacket()
+            wrapper_packet.ParseFromString(data)
+
+            if wrapper_packet.HasField("detection"):
+                if last_frame != wrapper_packet.detection.frame_number and \
+                        frame != {}:
+                    print("Committing: with frame number {0}".format(frame[
+                                                                         "frame_number"]))
+                    buffer.append(frame)
+                    frame = {}
+                    last_frame = wrapper_packet.detection.frame_number
+                    if len(buffer) >= 60:
+                        print("Sending: the buffer content")
+                        async_to_sync(self.channel_layer.send)(
+                            message["channel_name"],
+                            {
+                                "type": "forward.to.client",
+                                "json": {
+                                    "simulator_output": buffer
+                                }
+                            }
+                        )
+                        buffer = []
+                print("Updated: with frame number {0}".format(
+                    wrapper_packet.detection.frame_number))
+                frame = update(frame, wrapper_packet)
+
         print("Listener: Terminate the simulator")
         async_to_sync(self.channel_layer.send)(
             "simulator",
