@@ -8,6 +8,8 @@ import json
 import os
 import signal
 import subprocess
+import time
+from enum import Enum
 from pathlib import Path
 
 from asgiref.sync import async_to_sync
@@ -103,7 +105,7 @@ class ProtocolExecuter():
         async_to_sync(self.consumer.channel_layer.send)(
             "simulator",
             {
-                "type": "simulate",
+                "type": "start",
                 "channel_name": self.consumer.channel_name,
                 "values": values
             }
@@ -114,53 +116,94 @@ class ProtocolExecuter():
         pass
 
 
+class ListenerConsumer(SyncConsumer):
+
+    def listen(self, message):
+        print("Listener: Start the strategy")
+        async_to_sync(self.channel_layer.send)(
+            "simulator",
+            {
+                "type": "run"
+            }
+        )
+
+        time.sleep(10)
+        print("Listener: Terminate the simulator")
+        async_to_sync(self.channel_layer.send)(
+            "simulator",
+            {
+                "type": "stop",
+            }
+        )
+
+
+class State(Enum):
+    READY = 1
+    PREPARED = 2
+    RUNNING = 3
+
+
+simulator_state = State.READY
+tactic_pid = -1
+grsim_pid = -1
+ros_pid = -1
+
+
+def printSimState():
+    print("simulator_state: {0}".format(simulator_state))
+    print("tactic_pid: {0}".format(tactic_pid))
+    print("ros_pid: {0}".format(ros_pid))
+    print("grsim_pid: {0}".format(grsim_pid))
+
+
 class SimulateConsumer(SyncConsumer):
     """
     Background consumer that will start the simulator and report back to the
     client via the forward_to_client method of the connected websocket.
     """
 
-    def simulate(self, message):
-        """
-        Message to start the simulator. The tree must be provided in the
-        message as well as the channel name to be able to return messages.
-
-        TODO: 0.1 Improve this very ugy, threaded implementation, to a nice one.
-        :param message: The dictionary that was passed to the background by
-        the ProtocolExecuter.
-        """
-
+    def start(self, message):
+        if simulator_state != State.READY:
+            print("Simulator: Already running")
+            return
+        print("Simulator: Start the preparation")
         edit_tree(message["values"])
+        global ros_pid
+        global grsim_pid
+        ros_pid = start_ros().pid
+        grsim_pid = start_grsim().pid
 
-        ros = start_ros()
+        printSimState()
+
+        print("Simulator: Message the listener")
+        global simulator_state
+        simulator_state = State.PREPARED
         async_to_sync(self.channel_layer.send)(
-            message["channel_name"],
+            "listener",
             {
-                "type": "forward.to.client",
-                "json": {"text": "Started ROS"}
+                "type": "listen",
+                "channel_name": message["channel_name"],
             }
         )
 
-        grsim = start_grsim()
-        async_to_sync(self.channel_layer.send)(
-            message["channel_name"],
-            {
-                "type": "forward.to.client",
-                "json": {"text": "Started grSim"}
-            }
-        )
+    def run(self, message):
+        print("Simulator: Run the tactic")
+        printSimState()
+        global tactic_pid
+        tactic_pid = start_tactic().pid
+        print("Simulator: The simulation has started")
+        global simulator_state
+        simulator_state = State.RUNNING
 
-        start_tactic()
-        async_to_sync(self.channel_layer.send)(
-            message["channel_name"],
-            {
-                "type": "forward.to.client",
-                "json": {"text": "Started tactic"}
-            }
-        )
-
-        os.killpg(os.getpgid(grsim.pid), signal.SIGTERM)
-        os.killpg(os.getpgid(ros.pid), signal.SIGTERM)
+    def stop(self, message):
+        print("Simulator: Stop the simulator")
+        printSimState()
+        os.killpg(os.getpgid(tactic_pid), signal.SIGTERM)
+        os.killpg(os.getpgid(ros_pid), signal.SIGTERM)
+        os.killpg(os.getpgid(grsim_pid), signal.SIGTERM)
+        print("Simulator: The simulator was stopped")
+        global simulator_state
+        simulator_state = State.READY
 
 
 def edit_tree(values):
@@ -211,6 +254,6 @@ def start_tactic():
     Start the predefined tactic
 
     """
-    return subprocess.run(
-        "rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME,
-        shell=True, stdout=open(os.devnull, 'w'))
+    return subprocess.Popen("rosrun roboteam_tactics TestX " + settings.PROJECT_NAME + "/" + settings.TREE_NAME,
+                            stdout=open(os.devnull, 'w'),
+                            shell=True, preexec_fn=os.setsid)
