@@ -119,6 +119,16 @@ class ProtocolExecuter():
 class ListenerConsumer(SyncConsumer):
 
     def listen(self, message):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind(settings.SERVER_ADDRESS)
+        group = socket.inet_aton(settings.MULTICAST_GROUP)
+        mreq = struct.pack('4sL', group, socket.INADDR_ANY)
+        sock.setsockopt(
+            socket.IPPROTO_IP,
+            socket.IP_ADD_MEMBERSHIP,
+            mreq
+        )
+
         print("Listener: Start the strategy")
         async_to_sync(self.channel_layer.send)(
             "simulator",
@@ -163,6 +173,7 @@ class SimulateConsumer(SyncConsumer):
     """
 
     def start(self, message):
+        global simulator_state
         if simulator_state != State.READY:
             print("Simulator: Already running")
             return
@@ -176,7 +187,6 @@ class SimulateConsumer(SyncConsumer):
         printSimState()
 
         print("Simulator: Message the listener")
-        global simulator_state
         simulator_state = State.PREPARED
         async_to_sync(self.channel_layer.send)(
             "listener",
