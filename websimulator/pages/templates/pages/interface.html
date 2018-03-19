@@ -91,6 +91,24 @@ id="root">
           Simulation
         </button>
       </li>
+
+      {% block content %}
+      {% if user.is_authenticated %}
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+           onclick="location.href='{% url 'logout' %}'">
+          Logout
+      </button>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+           onclick="location.href='{% url 'social:begin' 'google-oauth2' %}'">
+          Sign in with Google
+      </button>
+      </li>
+      {% endif %}
+      {% endblock content %}
     </ul>
   </div>
 </nav>

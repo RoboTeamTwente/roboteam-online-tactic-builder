@@ -24,6 +24,7 @@ body {
   color: white;
   background-color: transparent;
   border-color: white;
+  margin-right: 5px;
 }
 
 .btn-roboteam-outline-inverted:hover {
