@@ -43,6 +43,8 @@ All Rights Reserved.
   <!-- JS for the simulation-->
   <script src="{% static "pages/js/simulation.js" %}"></script>
 
+  <!-- JS for saving and loading trees -->
+  <script src="{% static "pages/js/saving_loading.js" %}"></script>
   <!-- Bind views to actions-->
   <script>
     $(function () {
@@ -63,6 +65,10 @@ All Rights Reserved.
 
       $("#btnRunSimulation").click(function () {
         runSimulation();
+      });
+
+      $("#btnSave").click(function () {
+        saveTree("{{ csrf_token }}", "{{ user }}");
       });
     })
   </script>
@@ -93,7 +99,13 @@ id="root">
       </li>
 
       {% block content %}
-      {% if user.is_authenticated %}
+      {% if backends.associated %}
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+           id="btnSave">
+          Save tree
+      </button>
+
       <li class="nav-item">
         <button type="button" class="btn btn-roboteam-outline-inverted"
            onclick="location.href='{% url 'logout' %}'">
