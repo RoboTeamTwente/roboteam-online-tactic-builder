@@ -8,6 +8,8 @@ Technical Computer Science of the University of Twente.
 All Rights Reserved.
 */
 
+var queue = [];
+
 function runSimulation() {
   var editor = document.getElementById("b3js-editor").contentWindow.app.view;
   var myJSON = {
@@ -17,7 +19,10 @@ function runSimulation() {
 
   var ws = new WebSocket("ws://localhost:8000/");
   ws.onmessage = function (evt) {
-    console.log(JSON.parse(evt.data))
+    data = JSON.parse(evt.data);
+    for(i = 0; i < data.body.simulator_output.length; i++){
+      queue.push(data.body.simulator_output[i])
+    }
   };
   ws.onclose = function (event) {
     console.log(event)

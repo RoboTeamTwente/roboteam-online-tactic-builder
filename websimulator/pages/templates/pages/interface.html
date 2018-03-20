@@ -64,6 +64,23 @@ All Rights Reserved.
       $("#btnRunSimulation").click(function () {
         runSimulation();
       });
+
+      var animating = false;
+      setInterval(function(){
+        if(animating){
+          queue.pop();
+          console.log(queue.length);
+          if(queue.length < 1){
+            animating = false;
+            console.log("stopping animation buffering");
+          }
+        } else {
+          if(queue.length > 30){
+            animating = true;
+            console.log("big enough buffer starting animating");
+          }
+        }
+      }, 1000/57);
     })
   </script>
 
