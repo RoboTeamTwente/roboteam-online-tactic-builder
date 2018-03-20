@@ -2,6 +2,7 @@ class Field {
   constructor(canvas) {
     this._canvas = canvas;
     this._properties = Field.DEFAULT_PROPERTIES;
+    this._robots = []
   }
 
   static get DEFAULT_PROPERTIES() {
@@ -64,6 +65,34 @@ class Field {
     }
   }
 
+  static get ROBOT_PROPERTIES() {
+    return {
+      teamFillStyles: ["blue", "red"],
+      radius: 100,
+      cutoff: 60,
+      font: "bold 120px Arial",
+      textAlign: "center",
+      textBaseline: "middle",
+      fontFillStyle: "white",
+      sAngle: function () {
+        return 0 - Math.asin(this.cutoff / this.radius);
+      },
+      eAngle: function () {
+        return Math.PI + Math.asin(this.cutoff / this.radius);
+      }
+    }
+  }
+
+  static get BALL_PROPERTIES() {
+    return {
+      diameter: 43,
+      fillStyle: "orange",
+      radius: function () {
+        return this.diameter / 2;
+      }
+    }
+  }
+
   /**
    * Returns the properties
    *
@@ -80,6 +109,23 @@ class Field {
    */
   get canvas() {
     return this._canvas;
+  }
+
+  /**
+   * Gets the robot data
+   * @returns {*}
+   */
+  get robots() {
+    return this._robots;
+  }
+
+  get ball() {
+    return this._ball;
+  }
+
+  set components(value) {
+    this._ball = value.ball;
+    this._robots = value.robots;
   }
 
   /**
@@ -242,6 +288,56 @@ class Field {
     });
   }
 
+  drawRobots() {
+    this.canvas.edit((ctx) => {
+      let p = Field.ROBOT_PROPERTIES;
+
+      // Draw all robots
+      for (let r of this.robots) {
+        // Save current transformation
+        ctx.save();
+
+        // Make new transformation
+        ctx.translate(-r.y, -r.x);
+        ctx.rotate(r.orientation);
+
+        // Set fillStyle and draw robot
+        ctx.fillStyle = p.teamFillStyles[r.team];
+
+        ctx.beginPath();
+        ctx.arc(0, 0, p.radius, p.sAngle(), p.eAngle());
+        ctx.fill();
+
+        // Set font properties
+        ctx.font = p.font;
+        ctx.textAlign = p.textAlign;
+        ctx.textBaseline = p.textBaseline;
+        ctx.fillStyle = p.fontFillStyle;
+
+        // Add ID to robot
+        ctx.fillText(r.id, 0, (p.radius - p.cutoff) / 2);
+
+        // Restore old transformation
+        ctx.restore();
+      }
+    })
+  }
+
+  drawBall() {
+    let b = this.ball;
+    if (b === undefined || b === null) return;
+
+    let p = Field.BALL_PROPERTIES;
+
+    this.canvas.edit((ctx) => {
+      ctx.fillStyle = p.fillStyle;
+
+      ctx.beginPath();
+      ctx.arc(-b.y, -b.x, p.radius(), 0, Math.PI * 2);
+      ctx.fill();
+    })
+  }
+
   /**
    * Draws a the field
    */
@@ -259,5 +355,9 @@ class Field {
     this.drawBox();
     this.drawField();
     this.drawGoals();
+
+    // Draw robots and ball
+    this.drawRobots();
+    this.drawBall();
   }
 }
