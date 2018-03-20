@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en" style="height: 100%">
 <head>
@@ -10,13 +12,16 @@
 
   <!--Import Canvas Extension-->
   <script type="text/javascript"
-          src="static/js/CanvasRenderingContext2DExtension.js"></script>
+          src="
+{% static 'pages/js/CanvasRenderingContext2DExtension.js' %}"></script>
 
   <!-- Import Canvas -->
-  <script type="text/javascript" src="static/js/Canvas.js"></script>
+  <script type="text/javascript" src="
+{% static 'pages/js/Canvas.js' %}"></script>
 
   <!-- Import Field -->
-  <script type="text/javascript" src="static/js/Field.js"></script>
+  <script type="text/javascript" src="
+{% static 'pages/js/Field.js' %}"></script>
 
   <script type="text/javascript">
     $(function () {

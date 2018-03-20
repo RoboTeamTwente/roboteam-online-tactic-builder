@@ -18,3 +18,10 @@ class EditorView(View):
 
     def get(self, request: HttpRequest):
         return render(request, "b3js/editor.html", {})
+
+
+class SimulatorView(View):
+    http_method_names = ['get']
+
+    def get(self, request: HttpRequest):
+        return render(request, "pages/frontend-simulator.html", {})
