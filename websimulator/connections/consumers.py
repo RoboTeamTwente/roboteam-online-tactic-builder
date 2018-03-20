@@ -226,6 +226,7 @@ class ListenerConsumer(SyncConsumer):
         self.buffer = []
         self.last_frame_number = 0
         self.channel_name = ""
+        self.frame = {}
 
     def _setup_socket(self):
         """
@@ -302,7 +303,8 @@ class ListenerConsumer(SyncConsumer):
             packet.ParseFromString(data)
 
             if packet.HasField("detection"):
-                if self.last_frame_number != packet.detection.frame_number:
+                if self.last_frame_number != packet.detection.frame_number \
+                        and self.frame != {}:
                     result = self.frame
                     self.buffer.append(post_process(result))
                     self.frame = update({}, packet)
