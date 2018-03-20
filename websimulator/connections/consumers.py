@@ -455,6 +455,15 @@ def edit_tree(values):
     tree = values["tree"]
     tree["title"] = settings.TREE_NAME
 
+    #For every node, change it's title to the name of the node and append a number
+    nodecounter = 0;
+    for node in tree["nodes"]:
+        node_json = tree["nodes"][node]
+        node_json["title"] = node_json["name"] + "_" + str(nodecounter)
+        nodecounter += 1
+
+    print(tree)
+
     result = {'data': {'trees': [tree]}}
 
     project_location = str(

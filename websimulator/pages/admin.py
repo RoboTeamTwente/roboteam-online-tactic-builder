@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import custom_node
+
+admin.site.register(custom_node)

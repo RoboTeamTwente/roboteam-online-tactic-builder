@@ -4,148 +4,108 @@
 <html>
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 
-  <title>Behavior3JS Editor</title>
+    <title>Behavior3JS Editor</title>
 
-  <script type="text/javascript"
-          src="{% static "b3js/js/preload.min.js" %}"></script>
-  <link href="{% static "b3js/css/normalize.css" %}"
-        rel="stylesheet">
-  <link href="{% static  "b3js/css/preload.css"%}" rel="stylesheet">
-  <link href="{% static "b3js/css/editor.css" %}" rel="stylesheet">
+    <script type="text/javascript"
+            src="{% static 'b3js/js/preload.min.js' %}"></script>
+    <link href="{% static 'b3js/css/normalize.css' %}"
+          rel="stylesheet">
+    <link href="{% static  'b3js/css/preload.css'%}" rel="stylesheet">
+    <link href="{% static 'b3js/css/editor.css' %}" rel="stylesheet">
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var loader, app;
 
-  <script type="text/javascript">
-    var loader, app;
+      //List of all custom nodes that should become available for the user to build trees.
+      //The index of the list determines what type of nodes are in there where the order is as follows:
+      // 0: Composites
+      // 1: Decorator
+      // 2: Condition
+      // 3: Action
 
-    var custom_nodes = [
-      [3, [ // Skills
-        "GetBall",
-        "GoToPos",
-        "Failer",
-        "Freeze",
-        //"Positioning", // (Deze skill is nog WIP, die moet later toegevoegd
-        // worden)
-        "RandomDrive",
-        "ReceiveBall",
-        "Runner",
-        "ShootAway",
-        "SimpleDefender",
-        "Sleep",
-        "Succeeder",
-        "Twirl",
-        "Wander"
-      ]],
-      [2, [ // Conditions
-        "BallInsideField",
-        "BallOnOurSide",
-        "BallOnTheirSide",
-        "CanClaimBall",
-        "CanInterceptBall",
-        "CanKeeperMove",
-        "CanPassSafely",
-        "CanReachPoint",
-        "CanSeePoint",
-        "CanSeeRobot",
-        "CanSeeTheirGoal",
-        "DistanceXToY",
-        "IHaveBall",
-        "IsBallInDefenseArea",
-        "IsBallInGoal",
-        "IsBallInZone",
-        "TeamHasBall",
-        "TheyHaveBall",
-        "WeHaveBall"
-      ]],
-      [1, [ // Decorators
-        "Failer",
-        "Inverter",
-        "Limit @ Activations",
-        "Max @ms",
-        "Repeat",
-        "Repeat Until Failure",
-        "Repeat Until Success",
-        "Repeat @x",
-        "Succeeder"
-      ]],
-      [0, [ // Composites
-        "MemPriority",
-        "MemSequence",
-        "ParallelSequence",
-        "ParallelTactic",
-        "Priority",
-        "Sequence"
-      ]]
-    ];
+      var custom_nodes = [[], [], [], []];
 
-    function preload() {
-      var domProgress = document.getElementById('loading-progress');
-      var domLoading = document.getElementById('loading-text');
+      function preload() {
+        var domProgress = document.getElementById('loading-progress');
+        var domLoading = document.getElementById('loading-text');
 
-      loader = new createjs.LoadQueue(true);
-      loader.on('progress', function(event) {
-        domProgress.innerHTML = Math.floor(event.progress*100)+'%';
-      });
-      loader.on('complete', function(event) {
-        domLoading.innerHTML = 'Initializing editor components, please wait...';
-        app.initialize();
-        app.view.nodes = {};
-        app.helpers.addRoboNodes = function (roboNodes) {
-          // Add some custom nodes to the editor, so they are available to the client.
-          // The roboNodes must be formatted like [[{Node-Type},[{Node-Name},...]],...]
-          roboNodes.forEach(function (type) {
-            // First we iterate over the 4 different types of nodes.
+        loader = new createjs.LoadQueue(true);
+        loader.on('progress', function (event) {
+          domProgress.innerHTML = Math.floor(event.progress * 100) + '%';
+        });
+        loader.on('complete', function (event) {
+          domLoading.innerHTML = 'Initializing editor components, please wait...';
+          app.initialize();
+          app.view.nodes = {};
+          app.helpers.addRoboNodes = function (roboNodes) {
+            // Add some custom nodes to the editor, so they are available to the client.
+            // The roboNodes must be formatted like [[{Node-Type},[{Node-Name},...]],...]
             var b = {
+              // First we iterate over the 4 different types of nodes.
               0: b3.Composite,
               1: b3.Decorator,
               2: b3.Condition,
               3: b3.Action
             };
-            // Extract the current type
-            var b3_type = b[type[0]];
-            type[1].forEach(function (name) {
-              // Then for each individual node we add it to the type group.
-              var f = b3.Class(b3_type);
-              f.prototype.name = name;
-              f.prototype.title = name;
-              app.view.registerNode(f);
+
+            $.each(roboNodes, function (i, item) {
+              // Extract the current type
+              var t = b[i];
+              item.forEach(function (value) {
+                // Then for each individual node we add it to the type group.
+                var f = b3.Class(t);
+                f.prototype.name = value;
+                f.prototype.title = value;
+                app.view.registerNode(f);
+              })
             });
-          });
 
-          app.helpers.updateNodes()
-        };
+            app.helpers.updateNodes()
+          };
 
-        app.helpers.addRoboNodes(custom_nodes);
+          //Retrieve all nodes in the database
+          $.getJSON("{% url 'pages:custom_nodes' %}", function (json) {
+            //Loop over all the nodes and put them in the correct list of custom nodes
+            $.each(json, function (i, item) {
+              custom_nodes[parseInt(item.type)].push(item.name);
+            });
+            app.helpers.addRoboNodes(custom_nodes);
+          })
 
-        // hide preload
-        $('#preloading').fadeOut(250);
-      });
-      loader.loadManifest([
-        // SCRIPT
-        {id:'', src:'{% static "b3js/img/closedhand.cur" %}'},
-        {id:'', src:'{% static "b3js/js/b3core.0.1.0.min.js" %}'},
-        {id:'', src:'{% static "b3js/js/b3view.0.1.0.min.js" %}'},
-        {id:'', src:'{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
-        {id:'', src:'{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
-        {id:'view-all', src:'{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
-      ])
-    }
-  </script>
+          // hide preload
+          $('#preloading').fadeOut(250);
+        });
+        loader.loadManifest([
+          // SCRIPT
+          {id: '', src: '{% static "b3js/img/closedhand.cur" %}'},
+          {id: '', src: '{% static "b3js/js/b3core.0.1.0.min.js" %}'},
+          {id: '', src: '{% static "b3js/js/b3view.0.1.0.min.js" %}'},
+          {id: '', src: '{% static "b3js/js/b3editor.0.1.0.min.js" %}'},
+          {id: '', src: '{% static "b3js/css/b3editor.0.1.0.min.css" %}'},
+          {id: 'view-all', src: '{% static "b3js/html/b3editor.0.1.0.min.html" %}'}
+        ])
+      }
+    </script>
 
 </head>
 
 <body onload="preload();">
 
-  <div id="preloading">
+<div id="preloading">
     <div class="content">
-      <img src="{% static "b3js/img/loading.gif" %}" alt="Loading"/>
-      <p id="loading-text">Loading, please wait... <span id="loading-progress">0%</span></p>
+        <img src="{% static " b3js/img/loading.gif" %}" alt="Loading"/>
+        <p id="loading-text">Loading, please wait... <span id="loading-progress">0%</span></p>
     </div>
-  </div>
+</div>
 
-  <div id="page">
-  </div>
+<div id="page">
+</div>
 
 </body>
 </html>
