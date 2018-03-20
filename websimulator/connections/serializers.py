@@ -5,12 +5,30 @@ deligate all the action to the appropriate Serializers to let them handle
 their part.
 """
 
-from rest_framework.serializers import Serializer, ChoiceField, DictField
+from rest_framework.serializers import Serializer, ChoiceField, DictField, \
+    CharField
+
+
+class TreeContentSerializer(Serializer):
+    """
+    The TreeContentSerializer is used to validate the incoming JSON object
+    against the requirements of the contents of a tree.
+    """
+    nodes = DictField()
+    root = CharField()
+
+
+class SimValuesSerializer(Serializer):
+    """
+    The SimValeusSerializer is used to validate the incoming JSON object
+    against the requirements of a tree.
+    """
+    tree = TreeContentSerializer()
 
 
 class ProtocolSerializer(Serializer):
     """
-    The ProtocolSerializer is used to validate incoming JSON object agains the
+    The ProtocolSerializer is used to validate incoming JSON object against the
     protocol used for communication over the websocket.
     """
 
@@ -27,9 +45,10 @@ class ProtocolSerializer(Serializer):
         Validator for the SIM action.
         :param values: The values passed by the client with the action.
         """
-        serializer = StartSimulatorSerializer(data=values)
-        serializer.is_valid(raise_exception=True)
-        return values
+        sv_serializer = SimValuesSerializer(data=values)
+        sv_serializer.is_valid(raise_exception=True)
+
+        return sv_serializer.validated_data
 
     def stop_sim(self, values):
         """
@@ -65,15 +84,3 @@ class ProtocolSerializer(Serializer):
         data["values"] = getattr(self, method)(data["values"])
 
         return data
-
-
-class StartSimulatorSerializer(Serializer):
-    """
-    The StartSimulatorSerializer is used to validate the values given with a SIM
-    protocol message.
-    """
-
-    # For now only the behavior3 is needed to start the simulator, later a
-    # 'level' field might be added to indicate which setup should be used in
-    # the simulator.
-    tree = DictField()
