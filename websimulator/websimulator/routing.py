@@ -10,5 +10,6 @@ application = ProtocolTypeRouter({
     ]),
     "channel": ChannelNameRouter({
         "simulator": consumers.SimulateConsumer,
+        "listener": consumers.ListenerConsumer,
     })
 })
