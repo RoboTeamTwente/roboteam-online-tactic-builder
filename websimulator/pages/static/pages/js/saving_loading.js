@@ -14,7 +14,7 @@ function csrfSafeMethod(method) {
 Saves the tree that is currently visible on the screen
 Sends an AJAX request with the tree to the API backend
  */
-function saveTree(csrf_token) {
+function saveTree(csrf_token, name) {
   var editor = document.getElementById("b3js-editor").contentWindow.app.view;
   var myJSON = JSON.parse(editor.exportToJSON());
 
@@ -30,7 +30,7 @@ function saveTree(csrf_token) {
     type: "POST",
     url: "/tree/",
     csrfmiddlewaretoken: csrf_token,
-    data: JSON.stringify(myJSON),
+    data: JSON.stringify({"tree": JSON.stringify(myJSON), "name": name}),
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'

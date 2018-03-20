@@ -7,7 +7,7 @@ class Account(models.Model):
 
 
 class Tree(models.Model):
-    # name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default="", blank=True)
     tree = models.TextField()
     account = models.ForeignKey(Account,on_delete=models.CASCADE)
 
@@ -17,5 +17,5 @@ def add_user_model(social, is_new, *args, **kwargs):
         Account.objects.create(user=social)
 
 
-def add_new_tree(tree, account):
-    Tree.objects.create(tree=tree, account=account)
+def add_new_tree(name, tree, account):
+    Tree.objects.create(name=name, tree=tree, account=account)

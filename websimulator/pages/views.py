@@ -27,9 +27,9 @@ class TreeView(View):
     http_method_names = ['get','post']
 
     def post(self, request: HttpRequest):
-        tree = json.loads(request.body.decode("utf-8"))
+        data = json.loads(request.body.decode("utf-8"))
         if UserSocialAuth.objects.filter(user=request.user).exists():
-            add_new_tree(tree, Account.objects.get(
+            add_new_tree(data["name"], data["tree"], Account.objects.get(
                 user=UserSocialAuth.objects.get(
                 user=request.user)))
 

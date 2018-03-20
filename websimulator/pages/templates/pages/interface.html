@@ -27,6 +27,10 @@ All Rights Reserved.
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous"/>
 
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
   <!-- Custom CSS for RoboTeam theme -->
   <link rel="stylesheet"
         href="{% static "/pages/css/roboteam.css" %}"/>
@@ -68,9 +72,11 @@ All Rights Reserved.
       });
 
       $("#btnSave").click(function () {
-        saveTree("{{ csrf_token }}", "{{ user }}");
+        var name = $('#message-text').val();
+        saveTree("{{ csrf_token }}", name);
       });
-    })
+
+      })
   </script>
 
   <title>RoboTeam Tactic Simulator</title>
@@ -102,7 +108,7 @@ id="root">
       {% if backends.associated %}
       <li class="nav-item">
         <button type="button" class="btn btn-roboteam-outline-inverted"
-           id="btnSave">
+                data-toggle="modal" data-target="#exampleModal">
           Save tree
       </button>
 
@@ -174,6 +180,37 @@ id="root">
     <div class="panel-content" style="background: gray"> Content</div>
   </div>
 
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enter your
+          tactics name</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Tactic
+              name:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Quit</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal"
+                id="btnSave">Save
+          !</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
