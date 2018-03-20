@@ -299,7 +299,7 @@ class Field {
 
         // Make new transformation
         ctx.translate(-r.y, -r.x);
-        ctx.rotate(r.orientation);
+        ctx.rotate(-r.orientation);
 
         // Set fillStyle and draw robot
         ctx.fillStyle = p.teamFillStyles[r.team];
