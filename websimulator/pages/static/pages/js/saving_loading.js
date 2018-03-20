@@ -2,15 +2,22 @@
   Functions in order to properly save a tree
 */
 
+
+/*
+Verify whether a method requires CSRF protection
+ */
 function csrfSafeMethod(method) {
-  // these HTTP methods do not require CSRF protection
   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
+/*
+Saves the tree that is currently visible on the screen
+Sends an AJAX request with the tree to the API backend
+ */
 function saveTree(csrf_token) {
   var editor = document.getElementById("b3js-editor").contentWindow.app.view;
   var myJSON = JSON.parse(editor.exportToJSON());
-  console.log(myJSON);
+
   $.ajaxSetup({
     beforeSend: function (xhr, settings) {
       if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -35,46 +42,54 @@ function saveTree(csrf_token) {
       alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
     }
   });
-
-  // blocks = [];
-  //
-  // for (i = 0; i < editor.blocks.length; i++) {
-  //   blocks.push(editor.blocks[i]);
-  // }
-  //
-  // console.log(blocks);
-  //
-  // for (i = 1; i < blocks.length; i++){
-  //   editor.removeBlock(blocks[i]);
-  // }
-  //
-  // importFromJSON(myJSON, editor)
-
 }
 
-function importFromJSON(a, editor) {
-  var b = a,
-    c = null;
-  for (var d in b.nodes) {
-    var e = b.nodes[d],
-      f = editor.addBlock(e.name, e.display.x, e.display.y);
-    f.id = e.id,
-      f.title = e.title,
-      f.description = e.description,
-      f.parameters = e.parameters,
-      f.properties = e.properties,
-      f.redraw(),
-    f.id === b.root && (c = f)
+/*
+Function loading a new tree from JSON into the editor
+First removes all the current blocks
+Then adds new ones and forms the connections
+Based on the importToJSON function
+ */
+function loadTree(json_tree) {
+  var editor = document.getElementById("b3js-editor").contentWindow.app.view;
+
+  blocks = [];
+
+  for (i = 0; i < editor.blocks.length; i++) {
+    blocks.push(editor.blocks[i]);
   }
-  for (var d in b.nodes) {
-    var e = b.nodes[d],
-      g = editor.getBlockById(d),
-      h = null;
-    if ("composite" == g.category && e.children ? h = e.children : ("decorator" == g.category && e.child || "root" == g.category && e.child) && (h = [e.child]), h)
-      for (var i = 0; i < h.length; i++) {
-        var j = editor.getBlockById(h[i]);
-        editor.addConnection(g, j)
+
+  for (i = 1; i < blocks.length; i++){
+    editor.removeBlock(blocks[i]);
+  }
+
+  c = null;
+
+  for (var node in json_tree.nodes) {
+    var json_node = json_tree.nodes[node],
+      new_node = editor.addBlock(
+        json_node.name,
+        json_node.display.x,
+        json_node.display.y
+      );
+    new_node.id = json_node.id,
+      new_node.title = json_node.title,
+      new_node.description = json_node.description,
+      new_node.parameters = json_node.parameters,
+      new_node.properties = json_node.properties,
+      new_node.redraw(),
+    new_node.id === json_tree.root && (c = new_node)
+  }
+
+  for (var node in json_tree.nodes) {
+    var json_node = json_tree.nodes[node],
+      current_node = editor.getBlockById(node),
+      children = null;
+    if ("composite" == current_node.category && json_node.children ? children = json_node.children : ("decorator" == current_node.category && json_node.child || "root" == current_node.category && json_node.child) && (children = [json_node.child]), children)
+      for (var i = 0; i < children.length; i++) {
+        var j = editor.getBlockById(children[i]);
+        editor.addConnection(current_node, j)
       }
   }
-  c && editor.addConnection(editor.getRoot(), c), editor.ui.camera.x = b.display.camera_x, editor.ui.camera.y = b.display.camera_y, editor.ui.camera.scaleX = b.display.camera_z, editor.ui.camera.scaleY = b.display.camera_z
+  c && editor.addConnection(editor.getRoot(), c), editor.ui.camera.x = json_tree.display.camera_x, editor.ui.camera.y = json_tree.display.camera_y, editor.ui.camera.scaleX = json_tree.display.camera_z, editor.ui.camera.scaleY = json_tree.display.camera_z
 }
