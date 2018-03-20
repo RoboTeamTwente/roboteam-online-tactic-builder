@@ -10,6 +10,16 @@
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
 
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous"/>
+
+  <!-- Custom CSS for RoboTeam themed simulator -->
+    <link rel="stylesheet"
+        href="{% static "/pages/css/simulator.css" %}"/>
+
   <!--Import Canvas Extension-->
   <script type="text/javascript"
           src="
@@ -24,93 +34,35 @@
 {% static 'pages/js/Field.js' %}"></script>
 
   <script type="text/javascript">
+    showOverlay = function(message, bslevel){
+      $("#overlay-content").html(message);
+      $("#overlay-content").removeClass();
+      $("#overlay-content").addClass("alert alert-" + bslevel);
+      $("#overlay").fadeIn(150);
+    };
+    hideOverlay = function(){
+      $("#overlay").fadeOut(150);
+    };
+
     $(function () {
       console.log("ready");
       field = new Field(new Canvas("canvas", "container"));
       $(window).resize(() => field.draw());
       field.draw();
-      comp = {
-        "ball": {"z": 498.5433654785156, "x": 0.0, "y": 0.0},
-        "robots": [{
-          "id": 0,
-          "team": 0,
-          "x": 1500.0,
-          "y": 1120.0,
-          "orientation": 3.1415927410125732
-        }, {
-          "id": 1,
-          "team": 0,
-          "x": 1500.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 3.1415927410125732
-        }, {
-          "id": 2,
-          "team": 0,
-          "x": 1500.0,
-          "y": -1120.0,
-          "orientation": 3.1415927410125732
-        }, {
-          "id": 3,
-          "team": 0,
-          "x": 550.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 3.1415927410125732
-        }, {
-          "id": 4,
-          "team": 0,
-          "x": 2500.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 3.1415927410125732
-        }, {
-          "id": 5,
-          "team": 0,
-          "x": 3600.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 3.1415927410125732
-        }, {
-          "id": 0,
-          "team": 1,
-          "x": -1500.0,
-          "y": 1120.0,
-          "orientation": 0.0
-        }, {
-          "id": 1,
-          "team": 1,
-          "x": -1500.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 0.0
-        }, {
-          "id": 2,
-          "team": 1,
-          "x": -1500.0,
-          "y": -1120.0,
-          "orientation": 0.0
-        }, {
-          "id": 3,
-          "team": 1,
-          "x": -550.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 0.0
-        }, {
-          "id": 4,
-          "team": 1,
-          "x": -2500.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 0.0
-        }, {
-          "id": 5,
-          "team": 1,
-          "x": -3600.0,
-          "y": -2.1740221421011628e-18,
-          "orientation": 0.0
-        }],
-        "frame_number": 0
-      }
-    });
+    }
   </script>
 </head>
 <body id="container" style="height: 100%; margin: 0; overflow: hidden">
 <canvas id="canvas"
-        style="background: green"></canvas>
+        style="background: green;"></canvas>
+<div id="overlay">
+  <div class="row justify-content-center" id="overlay-row">
+    <div class="col-6">
+      <div id="overlay-content" class="alert alert-primary" role="alert">
+        Preparing simulation
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
