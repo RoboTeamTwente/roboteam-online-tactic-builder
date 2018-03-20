@@ -67,21 +67,27 @@ All Rights Reserved.
       });
 
       var animating = false;
-      setInterval(function(){
-        if(animating){
-          queue.pop();
+      var buffer_size = 30;
+      setInterval(function () {
+        if (animating) {
+          frame = queue.shift();
+          field = $("#simulator")[0].contentWindow.field;
+
+          field.components = frame;
+          field.draw();
           console.log(queue.length);
-          if(queue.length < 1){
+          if (queue.length < 1) {
             animating = false;
+            buffer_size += 60;
             console.log("stopping animation buffering");
           }
         } else {
-          if(queue.length > 30){
+          if (queue.length > buffer_size) {
             animating = true;
             console.log("big enough buffer starting animating");
           }
         }
-      }, 1000/57);
+      }, 1000 / 60);
     })
   </script>
 
