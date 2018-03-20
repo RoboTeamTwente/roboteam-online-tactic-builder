@@ -216,8 +216,13 @@ class ListenerConsumer(SyncConsumer):
         we add a member field for the socket.
         """
         super().__init__(*args, **kwargs)
+        self._initialize()
+
+    def _initialize(self):
+        """
+        Resets all the variable to the initial listen state.
+        """
         self.socket = None
-        self.frame = {}
         self.buffer = []
         self.last_frame_number = 0
         self.channel_name = ""
@@ -317,6 +322,7 @@ class ListenerConsumer(SyncConsumer):
         :param message: The message containing information about the client
         and its reply channel.
         """
+        self._initialize()
         self._setup_socket()
         self.channel_name = message["channel_name"]
 
