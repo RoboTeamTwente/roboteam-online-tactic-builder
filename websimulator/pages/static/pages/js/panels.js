@@ -29,7 +29,7 @@ $.ready(function () {
  */
 function showAllPanels() {
   $(".panel-full-screen, .panel-hide").css("display", "inline");
-  $(".panel").show();
+  $(".panel").css("display", "flex");
   $(".panel-show-other, .panel-switch").hide();
 }
 
@@ -40,7 +40,7 @@ function showAllPanels() {
  */
 function showSinglePanel(panel) {
   $(".panel, .panel-full-screen, .panel-hide").hide();
-  $(panel).show();
+  $(panel).css("display", "flex");
   $(".panel-show-other, .panel-switch").css("display", "inline");
 }
 
@@ -49,7 +49,7 @@ function showSinglePanel(panel) {
  * @param thisPanel The current pannel
  */
 function showOtherPanel(thisPanel) {
-  $(".panel").show();
+  $(".panel").css("display","flex");
   $(".panel-full-screen, .panel-hide").hide();
   $(thisPanel).hide();
   $(".panel-show-other, .panel-switch").css("display", "inline");

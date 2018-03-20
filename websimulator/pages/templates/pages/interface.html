@@ -63,6 +63,7 @@ All Rights Reserved.
 
       $("#btnRunSimulation").click(function () {
         runSimulation();
+        showSinglePanel("#panel-simulation");
       });
 
       var animating = false;
@@ -86,8 +87,8 @@ All Rights Reserved.
 
   <title>RoboTeam Tactic Simulator</title>
 </head>
-<body onload='showSinglePanel("#panel-editor")' class="d-flex flex-column"
-id="root">
+<body class="d-flex flex-column"
+      id="root">
 
 <!-- Navigation / action bar-->
 <nav
