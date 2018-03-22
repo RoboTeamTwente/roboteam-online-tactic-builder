@@ -4,6 +4,7 @@ from django.views import View
 import json
 
 from .models import Tree, add_new_tree, Account
+from .forms import TreeForm
 from social_django.models import UserSocialAuth
 
 # Create your views here.
@@ -28,10 +29,13 @@ class TreeView(View):
 
     def post(self, request: HttpRequest):
         data = json.loads(request.body.decode("utf-8"))
-        if UserSocialAuth.objects.filter(user=request.user).exists():
-            add_new_tree(data["name"], data["tree"], Account.objects.get(
-                user=UserSocialAuth.objects.get(
-                user=request.user)))
-
-        return HttpResponse(200)
+        form = TreeForm(data)
+        if form.is_valid():
+            if UserSocialAuth.objects.filter(user=request.user).exists():
+                add_new_tree(data["name"], data["tree"], Account.objects.get(
+                    user=UserSocialAuth.objects.get(
+                    user=request.user)))
+            return HttpResponse(200)
+        else:
+            return HttpResponse(400)
 

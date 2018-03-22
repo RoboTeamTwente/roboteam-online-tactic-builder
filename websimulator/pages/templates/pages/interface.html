@@ -76,7 +76,7 @@ All Rights Reserved.
         saveTree("{{ csrf_token }}", name);
       });
 
-      })
+      });
   </script>
 
   <title>RoboTeam Tactic Simulator</title>
@@ -108,9 +108,18 @@ id="root">
       {% if backends.associated %}
       <li class="nav-item">
         <button type="button" class="btn btn-roboteam-outline-inverted"
-                data-toggle="modal" data-target="#exampleModal">
+                data-toggle="modal" data-target="#saveModal">
           Save tree
       </button>
+      </li>
+
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+                >
+          Load tree
+      </button>
+      </li>
+
 
       <li class="nav-item">
         <button type="button" class="btn btn-roboteam-outline-inverted"
@@ -182,33 +191,35 @@ id="root">
 
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal save -->
+<div class="modal fade" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Enter your
-          tactics name</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="message-text" class="col-form-label">Tactic
-              name:</label>
-            <textarea class="form-control" id="message-text"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-          Quit</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"
-                id="btnSave">Save
-          !</button>
-      </div>
+    <div class="modal-content" style="background: #E2231A">
+        <div class="modal-header">
+          <h5 style="color: white" class="modal-title"
+              id="saveModalLabel">Enter your
+            tactics name</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span style="color: white" aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            {% csrf_token %}
+            <div class="form-group">
+              <label style="color: white" for="message-text"
+                     class="col-form-label">Tactic
+                name:</label>
+              <textarea class="form-control" id="message-text"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal">
+            Cancel</button>
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal"
+                  id="btnSave">Save!</button>
+        </div>
     </div>
   </div>
 </div>
