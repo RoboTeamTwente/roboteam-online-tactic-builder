@@ -137,13 +137,20 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [("localhost", 6379)]
         },
     },
 }
 
 # End channels specific configuration
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # Default project and tree name
 PROJECT_NAME = "rtt_tactics"
@@ -169,3 +176,11 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
     'pages.models.add_user_model'
 )
+
+
+# grSim listener configuration
+MULTICAST_GROUP = '224.5.23.2'
+SERVER_ADDRESS = ('', 10037)
+RECEIVE_SIZE = 16384
+BUFFER_SIZE = 30
+MAX_SIMULATION_TIME=15
