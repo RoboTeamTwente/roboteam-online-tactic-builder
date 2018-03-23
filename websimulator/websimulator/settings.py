@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'pages',
     'connections',
     'rest_framework',
+    'social_django'
 ]
 
 MIDDLEWARE = [
@@ -65,10 +66,20 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.open_id.OpenIdAuth',
+    'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 WSGI_APPLICATION = 'websimulator.wsgi.application'
 
@@ -133,10 +144,39 @@ CHANNEL_LAYERS = {
 
 # End channels specific configuration
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # Default project and tree name
 PROJECT_NAME = "rtt_tactics"
 TREE_NAME = "root"
+
+# Login destination
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='946056528042-ujcm5fvpp54o00m8edruph5dasg8qf3s.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'MQp8SBJz67f2_F05CI-6qx3t'
+
+LOGIN_URL = 'pages:index'
+LOGIN_REDIRECT_URL = 'pages:index'
+LOGOUT_REDIRECT_URL = 'pages:index'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'pages.models.add_user_model'
+)
+
 
 # grSim listener configuration
 MULTICAST_GROUP = '224.5.23.2'

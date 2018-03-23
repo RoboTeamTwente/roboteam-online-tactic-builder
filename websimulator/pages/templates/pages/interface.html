@@ -27,9 +27,13 @@ All Rights Reserved.
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous"/>
 
-    <!-- Custom CSS for RoboTeam theme -->
-    <link rel="stylesheet"
-          href="{% static "/pages/css/roboteam.css" %}"/>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <!-- Custom CSS for RoboTeam theme -->
+  <link rel="stylesheet"
+        href="{% static "/pages/css/roboteam.css" %}"/>
 
     <!-- jQuery -->
     <script
@@ -43,29 +47,60 @@ All Rights Reserved.
     <!-- JS for the simulation-->
     <script src="{% static "pages/js/simulation.js" %}"></script>
 
-    <!-- Bind views to actions-->
-    <script>
-        $(function () {
-            // Bind hide and switch buttons
-            $(".panel-hide, .panel-switch").click(function (event) {
-                showOtherPanel($(event.target).closest(".panel"));
-            });
+  <!-- JS for saving and loading trees -->
+  <script src="{% static "pages/js/saving_loading.js" %}"></script>
+  <!-- Bind views to actions-->
+  <script>
+    $(function () {
+      $('#saveModal').on('shown.bs.modal', function () {
+        setTimeout(function (){
+        $('#message-text').focus();
+    }, 1000);
+      });
 
-            // Bind full screen buttons
-            $(".panel-full-screen").click(function (event) {
-                showSinglePanel($(event.target).closest(".panel"));
-            });
+      // Bind hide and switch buttons
+      $(".panel-hide, .panel-switch").click(function (event) {
+        showOtherPanel($(event.target).closest(".panel"));
+      });
 
-            // Bind show other buttons
-            $(".panel-show-other").click(function () {
-                showAllPanels();
-            });
+      // Bind full screen buttons
+      $(".panel-full-screen").click(function (event) {
+          showSinglePanel($(event.target).closest(".panel"));
+      });
 
-            $("#btnRunSimulation").click(function () {
-                runSimulation();
-                showSinglePanel("#panel-simulation");
-                changeGuiStatus(AnimationStatus.SUBMITTED, getSimulator());
-            });
+      // Bind show other buttons
+      $(".panel-show-other").click(function () {
+          showAllPanels();
+      });
+
+      $("#btnRunSimulation").click(function () {
+          runSimulation();
+          showSinglePanel("#panel-simulation");
+          changeGuiStatus(AnimationStatus.SUBMITTED, getSimulator());
+      });
+      
+      // Save the current tree
+      $("#btnSave").click(function () {
+        var name = $('#message-text').val();
+        saveTree("{{ csrf_token }}", name);
+      });
+
+      // Load all trees for this user
+      $("#btnLoad").click(function () {
+        var radioButtons = document.getElementsByName("radio_tree");
+        var val = null;
+          for (var x = 0; x < radioButtons.length; x ++) {
+            if (radioButtons[x].checked) {
+              val = radioButtons[x].value;
+              break;
+            }
+          }
+        loadTree(getTree("{{ csrf_token }}", val));
+
+      })
+
+      });
+  </script>
 
             getSimulator = function () {
                 return $("#simulator")[0].contentWindow;
@@ -105,26 +140,56 @@ All Rights Reserved.
 
 <!-- Navigation / action bar-->
 <nav
-        class="navbar navbar-dark navbar-expand-md bg-dark navbar-roboteam justify-content-center">
-    <a href="http://roboteamtwente.nl" target="_blank"
-       class="navbar-brand w-50 mr-auto">
-        <img src="{% static "pages/img/logo.svg" %}" height="50px">
-        Tactic Simulator
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#collapsingNavbar3">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
-        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-            <li class="nav-item">
-                <button type="button" class="btn btn-roboteam-outline-inverted"
-                        id="btnRunSimulation">Run
-                    Simulation
-                </button>
-            </li>
-        </ul>
-    </div>
+    class="navbar navbar-dark navbar-expand-md bg-dark navbar-roboteam justify-content-center">
+  <a href="http://roboteamtwente.nl" target="_blank" class="navbar-brand w-50 mr-auto">
+      <img src="{% static "pages/img/logo.svg" %}" height="50px">
+    Tactic Simulator
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+          data-target="#collapsingNavbar3">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+    <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+                id="btnRunSimulation">Run
+          Simulation
+        </button>
+      </li>
+
+      {% if backends.associated %}
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+                data-toggle="modal" data-target="#saveModal">
+          Save tree
+      </button>
+      </li>
+
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+                data-toggle="modal" data-target="#loadModal">
+          Load tree
+      </button>
+      </li>
+
+
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+           onclick="location.href='{% url 'logout' %}'">
+          Logout
+      </button>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <button type="button" class="btn btn-roboteam-outline-inverted"
+           onclick="location.href='{% url 'social:begin' 'google-oauth2' %}'">
+          Sign in with Google
+      </button>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
 </nav>
 
 <!--Panel container-->
@@ -179,6 +244,77 @@ All Rights Reserved.
     </div>
 
 </div>
+
+<!-- Modal save -->
+<div class="modal fade" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background: #E2231A">
+        <div class="modal-header">
+          <h5 style="color: white" class="modal-title"
+              id="saveModalLabel">Enter your
+            tactics name</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span style="color: white" aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            {% csrf_token %}
+            <div class="form-group">
+              <label style="color: white" for="message-text"
+                     class="col-form-label">Tactic
+                name:</label>
+              <textarea class="form-control" id="message-text"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal">
+            Cancel</button>
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal"
+                  id="btnSave">Save!</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal load -->
+<div class="modal fade" id="loadModal" tabindex="-1" role="dialog"
+     aria-labelledby="loadModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background: #E2231A">
+        <div class="modal-header">
+          <h5 style="color: white" class="modal-title"
+              id="loadModalLabel">Which tactic do you want to load?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span style="color: white" aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul style="list-style-type: none">
+          {% for tree in trees %}
+          <li>
+              <label style="color:white" for="id_{{ forloop.counter0 }}">
+                  <input type="radio"
+                      id="id_{{ forloop.counter0 }}"
+                      value="{{ tree }}"
+                      name="radio_tree" />
+                  {{ tree }}
+              </label>
+          </li>
+          {% endfor %}
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal">
+            Cancel</button>
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal"
+                  id="btnLoad">Load tactic!</button>
+        </div>
+    </div>
+  </div>
+</div>
+
 
 
 </body>
