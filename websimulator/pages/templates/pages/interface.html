@@ -13,165 +13,172 @@ All Rights Reserved.
 <html lang="en">
 <head>
 
-  <!-- Favicon -->
-  <link rel="icon" href="{% static 'pages/img/favicon.ico' %}">
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'pages/img/favicon.ico' %}">
 
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-        crossorigin="anonymous"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"/>
 
-  <!-- Custom CSS for RoboTeam theme -->
-  <link rel="stylesheet"
-        href="{% static "/pages/css/roboteam.css" %}"/>
+    <!-- Custom CSS for RoboTeam theme -->
+    <link rel="stylesheet"
+          href="{% static "/pages/css/roboteam.css" %}"/>
 
-  <!-- jQuery -->
-  <script
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
+    <!-- jQuery -->
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
 
-  <!-- JS for the panels -->
-  <script src="{% static "pages/js/panels.js" %}"></script>
+    <!-- JS for the panels -->
+    <script src="{% static "pages/js/panels.js" %}"></script>
 
-  <!-- JS for the simulation-->
-  <script src="{% static "pages/js/simulation.js" %}"></script>
+    <!-- JS for the simulation-->
+    <script src="{% static "pages/js/simulation.js" %}"></script>
 
-  <!-- Bind views to actions-->
-  <script>
-    $(function () {
-      // Bind hide and switch buttons
-      $(".panel-hide, .panel-switch").click(function (event) {
-        showOtherPanel($(event.target).closest(".panel"));
-      });
+    <!-- Bind views to actions-->
+    <script>
+        $(function () {
+            // Bind hide and switch buttons
+            $(".panel-hide, .panel-switch").click(function (event) {
+                showOtherPanel($(event.target).closest(".panel"));
+            });
 
-      // Bind full screen buttons
-      $(".panel-full-screen").click(function (event) {
-        showSinglePanel($(event.target).closest(".panel"));
-      });
+            // Bind full screen buttons
+            $(".panel-full-screen").click(function (event) {
+                showSinglePanel($(event.target).closest(".panel"));
+            });
 
-      // Bind show other buttons
-      $(".panel-show-other").click(function () {
-        showAllPanels();
-      });
+            // Bind show other buttons
+            $(".panel-show-other").click(function () {
+                showAllPanels();
+            });
 
-      $("#btnRunSimulation").click(function () {
-        runSimulation();
-        showSinglePanel("#panel-simulation");
-      });
+            $("#btnRunSimulation").click(function () {
+                runSimulation();
+                showSinglePanel("#panel-simulation");
+                changeGuiStatus(AnimationStatus.SUBMITTED, getSimulator());
+            });
 
-      var animating = false;
-      var buffer_size = 30;
-      setInterval(function () {
-        if (animating) {
-          frame = queue.shift();
-          field = $("#simulator")[0].contentWindow.field;
+            getSimulator = function () {
+                return $("#simulator")[0].contentWindow;
+            };
 
-          field.components = frame;
-          field.draw();
-          console.log(queue.length);
-          if (queue.length < 1) {
-            animating = false;
-            buffer_size += 60;
-            console.log("stopping animation buffering");
-          }
-        } else {
-          if (queue.length > buffer_size) {
-            animating = true;
-            console.log("big enough buffer starting animating");
-          }
-        }
-      }, 1000 / 60);
-    })
-  </script>
+            simulator_window = getSimulator();
 
-  <title>RoboTeam Tactic Simulator</title>
+            setInterval(function () {
+                if (gui_status === AnimationStatus.SIMULATING) {
+                    if (queue.length < 1) {
+                        changeGuiStatus(AnimationStatus.BUFFERING, getSimulator());
+                        buffer_size += 60;
+                    } else {
+                        frame = queue.shift();
+
+                        if (frame.frame_number === -1) {
+                            changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
+                        } else {
+                            getSimulator().field.components = frame;
+                            getSimulator().field.draw();
+
+                        }
+                    }
+                } else if (gui_status === AnimationStatus.BUFFERING) {
+                    if (queue.length > buffer_size) {
+                        changeGuiStatus(AnimationStatus.SIMULATING, getSimulator());
+                    }
+                }
+            }, 1000 / 58);
+        })
+    </script>
+
+    <title>RoboTeam Tactic Simulator</title>
 </head>
 <body class="d-flex flex-column"
       id="root">
 
 <!-- Navigation / action bar-->
 <nav
-    class="navbar navbar-dark navbar-expand-md bg-dark navbar-roboteam justify-content-center">
-  <a href="http://roboteamtwente.nl" target="_blank" class="navbar-brand w-50 mr-auto">
-      <img src="{% static "pages/img/logo.svg" %}" height="50px">
-    Tactic Simulator
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse"
-          data-target="#collapsingNavbar3">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
-    <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-      <li class="nav-item">
-        <button type="button" class="btn btn-roboteam-outline-inverted"
-                id="btnRunSimulation">Run
-          Simulation
-        </button>
-      </li>
-    </ul>
-  </div>
+        class="navbar navbar-dark navbar-expand-md bg-dark navbar-roboteam justify-content-center">
+    <a href="http://roboteamtwente.nl" target="_blank"
+       class="navbar-brand w-50 mr-auto">
+        <img src="{% static "pages/img/logo.svg" %}" height="50px">
+        Tactic Simulator
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#collapsingNavbar3">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+            <li class="nav-item">
+                <button type="button" class="btn btn-roboteam-outline-inverted"
+                        id="btnRunSimulation">Run
+                    Simulation
+                </button>
+            </li>
+        </ul>
+    </div>
 </nav>
 
 <!--Panel container-->
 <div class="panel-container">
 
-  <!-- Editor panel-->
-  <div class="panel" id="panel-editor">
-    <div class="panel-menu">
-      <div class="panel-title">Behavior3 editor</div>
-      <div class="panel-action-bar">
+    <!-- Editor panel-->
+    <div class="panel" id="panel-editor">
+        <div class="panel-menu">
+            <div class="panel-title">Behavior3 editor</div>
+            <div class="panel-action-bar">
         <span class="panel-action panel-show-other">
           Show Simulation
         </span>
-        <span class="panel-action panel-switch">
+                <span class="panel-action panel-switch">
           Switch to Simulation
         </span>
-        <span class="panel-action panel-hide">
+                <span class="panel-action panel-hide">
           Hide
         </span>
-        <span class="panel-action panel-full-screen">
+                <span class="panel-action panel-full-screen">
           Full Screen
         </span>
-      </div>
+            </div>
+        </div>
+        <iframe class="panel-content" id="b3js-editor"
+                src="{% url 'pages:editor' %}"
+                width="100%" height="100%"></iframe>
     </div>
-    <iframe class="panel-content" id="b3js-editor"
-            src="{% url 'pages:editor' %}"
-            width="100%" height="100%"></iframe>
-  </div>
 
-  <!-- Simulation panel -->
-  <div class="panel" id="panel-simulation">
-    <div class="panel-menu">
-      <div class="panel-title">Simulation</div>
-      <div class="panel-action-bar">
+    <!-- Simulation panel -->
+    <div class="panel" id="panel-simulation">
+        <div class="panel-menu">
+            <div class="panel-title">Simulation</div>
+            <div class="panel-action-bar">
         <span class="panel-action panel-show-other">
           Show Editor
         </span>
-        <span class="panel-action panel-switch">
+                <span class="panel-action panel-switch">
           Switch to Editor
         </span>
-        <span class="panel-action panel-hide">
+                <span class="panel-action panel-hide">
           Hide
         </span>
-        <span class="panel-action panel-full-screen">
+                <span class="panel-action panel-full-screen">
           Full Screen
         </span>
-      </div>
+            </div>
+        </div>
+        <iframe id="simulator" class="panel-content"
+                src="{% url 'pages:simulator' %}"
+                width="100%"></iframe>
     </div>
-    <iframe id="simulator" class="panel-content"
-            src="{% url 'pages:simulator' %}"
-            width="100%"></iframe>
-  </div>
 
 </div>
-
 
 
 </body>

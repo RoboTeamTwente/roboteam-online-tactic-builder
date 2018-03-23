@@ -3,66 +3,66 @@
 <!DOCTYPE html>
 <html lang="en" style="height: 100%">
 <head>
-  <meta charset="UTF-8">
-  <title>Test</title>
-  <script
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-        crossorigin="anonymous"/>
-
-  <!-- Custom CSS for RoboTeam themed simulator -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet"
-        href="{% static "/pages/css/simulator.css" %}"/>
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"/>
 
-  <!--Import Canvas Extension-->
-  <script type="text/javascript"
-          src="
+    <!-- Custom CSS for RoboTeam themed simulator -->
+    <link rel="stylesheet"
+          href="{% static "/pages/css/simulator.css" %}"/>
+
+    <!--Import Canvas Extension-->
+    <script type="text/javascript"
+            src="
 {% static 'pages/js/CanvasRenderingContext2DExtension.js' %}"></script>
 
-  <!-- Import Canvas -->
-  <script type="text/javascript" src="
+    <!-- Import Canvas -->
+    <script type="text/javascript" src="
 {% static 'pages/js/Canvas.js' %}"></script>
 
-  <!-- Import Field -->
-  <script type="text/javascript" src="
+    <!-- Import Field -->
+    <script type="text/javascript" src="
 {% static 'pages/js/Field.js' %}"></script>
 
-  <script type="text/javascript">
-    showOverlay = function(message, bslevel){
-      $("#overlay-content").html(message);
-      $("#overlay-content").removeClass();
-      $("#overlay-content").addClass("alert alert-" + bslevel);
-      $("#overlay").fadeIn(150);
-    };
-    hideOverlay = function(){
-      $("#overlay").fadeOut(150);
-    };
+    <script type="text/javascript">
+        showOverlay = function (message, bslevel) {
+            $("#overlay-content").html(message);
+            $("#overlay-content").removeClass();
+            $("#overlay-content").addClass("alert alert-" + bslevel);
+            $("#overlay").fadeIn(150);
+        };
+        hideOverlay = function () {
+            $("#overlay").fadeOut(150);
+        };
 
-    $(function () {
-      console.log("ready");
-      field = new Field(new Canvas("canvas", "container"));
-      $(window).resize(() => field.draw());
-      field.draw();
-    }
-  </script>
+        $(function () {
+            console.log("ready");
+            field = new Field(new Canvas("canvas", "container"));
+            $(window).resize(() => field.draw());
+            field.draw();
+        });
+    </script>
 </head>
 <body id="container" style="height: 100%; margin: 0; overflow: hidden">
 <canvas id="canvas"
         style="background: green;"></canvas>
 <div id="overlay">
-  <div class="row justify-content-center" id="overlay-row">
-    <div class="col-6">
-      <div id="overlay-content" class="alert alert-primary" role="alert">
-        Preparing simulation
-      </div>
+    <div class="row justify-content-center" id="overlay-row">
+        <div class="col-6">
+            <div id="overlay-content" class="alert alert-primary" role="alert">
+                Ready to start a new simulation.
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 </body>
 </html>
