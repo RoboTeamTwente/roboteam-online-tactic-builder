@@ -13,6 +13,6 @@ urlpatterns = [
     path('custom_nodes/', CustomNodeViewSet.as_view({'get': 'list'}), name='custom_nodes'),
     path('', IndexView.as_view(), name='index'),
     path('editor/', EditorView.as_view(), name='editor'),
-    path('simulator/', SimulatorView.as_view(), name='simulator')
+    path('simulator/', SimulatorView.as_view(), name='simulator'),
     path('tree/', TreeView.as_view(), name='tree')
 ]
