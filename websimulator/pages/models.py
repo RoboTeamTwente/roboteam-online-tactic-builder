@@ -9,7 +9,8 @@ NODE_TYPE_CHOICES = (
     ('3', 'Action'),
 )
 
-class custom_node(models.Model):
+
+class CustomNode(models.Model):
     name = models.CharField(max_length=30)
     type = models.CharField(max_length=1, choices=NODE_TYPE_CHOICES)
 
