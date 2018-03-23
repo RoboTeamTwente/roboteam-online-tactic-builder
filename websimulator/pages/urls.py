@@ -1,6 +1,7 @@
 from django.urls import path
 from django.conf.urls import url, include
 from rest_framework import routers
+
 from .views import *
 
 app_name = 'pages'
@@ -11,5 +12,6 @@ app_name = 'pages'
 urlpatterns = [
     path('custom_nodes/', CustomNodeViewSet.as_view({'get': 'list'}), name='custom_nodes'),
     path('', IndexView.as_view(), name='index'),
-    path('editor/', EditorView.as_view(), name='editor')
+    path('editor/', EditorView.as_view(), name='editor'),
+    path('tree/', TreeView.as_view(), name='tree')
 ]
