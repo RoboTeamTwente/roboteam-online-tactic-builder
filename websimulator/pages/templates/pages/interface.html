@@ -52,6 +52,12 @@ All Rights Reserved.
   <!-- Bind views to actions-->
   <script>
     $(function () {
+      $('#saveModal').on('shown.bs.modal', function () {
+        setTimeout(function (){
+        $('#message-text').focus();
+    }, 1000);
+      });
+
       // Bind hide and switch buttons
       $(".panel-hide, .panel-switch").click(function (event) {
         showOtherPanel($(event.target).closest(".panel"));
@@ -67,14 +73,30 @@ All Rights Reserved.
         showAllPanels();
       });
 
+      // Run the simulation
       $("#btnRunSimulation").click(function () {
         runSimulation();
       });
 
+      // Save the current tree
       $("#btnSave").click(function () {
         var name = $('#message-text').val();
         saveTree("{{ csrf_token }}", name);
       });
+
+      // Load all trees for this user
+      $("#btnLoad").click(function () {
+        var radioButtons = document.getElementsByName("radio_tree");
+        var val = null;
+          for (var x = 0; x < radioButtons.length; x ++) {
+            if (radioButtons[x].checked) {
+              val = radioButtons[x].value;
+              break;
+            }
+          }
+        loadTree(getTree("{{ csrf_token }}", val));
+
+      })
 
       });
   </script>
@@ -104,7 +126,6 @@ id="root">
         </button>
       </li>
 
-      {% block content %}
       {% if backends.associated %}
       <li class="nav-item">
         <button type="button" class="btn btn-roboteam-outline-inverted"
@@ -115,7 +136,7 @@ id="root">
 
       <li class="nav-item">
         <button type="button" class="btn btn-roboteam-outline-inverted"
-                >
+                data-toggle="modal" data-target="#loadModal">
           Load tree
       </button>
       </li>
@@ -135,7 +156,6 @@ id="root">
       </button>
       </li>
       {% endif %}
-      {% endblock content %}
     </ul>
   </div>
 </nav>
@@ -219,6 +239,43 @@ id="root">
             Cancel</button>
           <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal"
                   id="btnSave">Save!</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal load -->
+<div class="modal fade" id="loadModal" tabindex="-1" role="dialog"
+     aria-labelledby="loadModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background: #E2231A">
+        <div class="modal-header">
+          <h5 style="color: white" class="modal-title"
+              id="loadModalLabel">Which tactic do you want to load?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span style="color: white" aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul style="list-style-type: none">
+          {% for tree in trees %}
+          <li>
+              <label style="color:white" for="id_{{ forloop.counter0 }}">
+                  <input type="radio"
+                      id="id_{{ forloop.counter0 }}"
+                      value="{{ tree }}"
+                      name="radio_tree" />
+                  {{ tree }}
+              </label>
+          </li>
+          {% endfor %}
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal">
+            Cancel</button>
+          <button type="button" class="btn btn-roboteam-outline-inverted" data-dismiss="modal"
+                  id="btnLoad">Load tactic!</button>
         </div>
     </div>
   </div>

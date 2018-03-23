@@ -35,13 +35,49 @@ function saveTree(csrf_token, name) {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    success: function () {
-      alert("Saved! It worked.");
+    success: function (response) {
+      if(parseInt(response,10) !== 200) {
+        alert("Invalid name or user!");
+      }
+      else {
+        alert("Saved! It worked.");
+        location.reload();
+      }
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
       alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
     }
   });
+}
+
+/*
+Gets the tree from the database with the corresponding name
+ */
+function getTree(csrf_token, name) {
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+      }
+    }
+  });
+  var output = null;
+  $.ajax({
+    type: "GET",
+    async: false,
+    url: "/tree/",
+    csrfmiddlewaretoken: csrf_token,
+    data: {
+      name: name
+    },
+    success: function (data) {
+      output = data;
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+    }
+  });
+  return output;
 }
 
 /*
@@ -91,5 +127,7 @@ function loadTree(json_tree) {
         editor.addConnection(current_node, j)
       }
   }
-  c && editor.addConnection(editor.getRoot(), c), editor.ui.camera.x = json_tree.display.camera_x, editor.ui.camera.y = json_tree.display.camera_y, editor.ui.camera.scaleX = json_tree.display.camera_z, editor.ui.camera.scaleY = json_tree.display.camera_z
+  c && editor.addConnection(editor.getRoot(), c), editor.ui.camera.x = json_tree.display.camera_x, editor.ui.camera.y = json_tree.display.camera_y, editor.ui.camera.scaleX = json_tree.display.camera_z, editor.ui.camera.scaleY = json_tree.display.camera_z;
+
+  editor.organize();
 }

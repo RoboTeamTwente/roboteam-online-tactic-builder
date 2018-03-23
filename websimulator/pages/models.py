@@ -11,6 +11,9 @@ class Tree(models.Model):
     tree = models.TextField()
     account = models.ForeignKey(Account,on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 
 def add_user_model(social, is_new, *args, **kwargs):
     if is_new:
