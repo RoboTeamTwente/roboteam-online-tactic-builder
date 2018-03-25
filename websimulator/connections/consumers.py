@@ -14,6 +14,8 @@ import struct
 from enum import Enum
 from pathlib import Path
 
+import time
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer, SyncConsumer
 
@@ -203,6 +205,29 @@ def update(frame: dict, commit: ssl_wrapper.SSL_WrapperPacket) -> dict:
     return frame
 
 
+class SimulationStatus(Enum):
+    READY = 1
+    SUBMITTED = 2
+    QUEUED = 3
+    GENERATING = 4
+    STARTING_SIMULATION = 5
+    SIMULATING = 6
+    BUFFERING = 7
+    FINISHED = 8
+
+
+def send_simulation_status(channel_layer, channel_name: str, status: SimulationStatus):
+    async_to_sync(channel_layer.send)(
+        channel_name,
+        {
+            "type": "forward.to.client",
+            "json": {
+                "simulator_status": status.value
+            }
+        }
+    )
+
+
 class ListenerConsumer(SyncConsumer):
     """
     Consumer that will be responsible for managing the simulation after it
@@ -225,10 +250,9 @@ class ListenerConsumer(SyncConsumer):
         self.socket = None
         self.buffer = []
         self.last_frame_number = 0
-        self.channel_name = ""
         self.frame = {}
 
-    def _setup_socket(self):
+    def _setup_socket(self, channel_name: str):
         """
         Creates a socket that is able to receive data from grSim. As soon as
         the socket is created the SimulatorConsumer is notified that it is
@@ -248,11 +272,12 @@ class ListenerConsumer(SyncConsumer):
         async_to_sync(self.channel_layer.send)(
             "simulator",
             {
-                "type": "run"
+                "type": "run",
+                "channel_name": channel_name
             }
         )
 
-    def _shutdown(self):
+    def _shutdown(self, channel_name: str):
         """
         Flush the buffer and close the socket connection and tell the
         simulator to stop
@@ -260,7 +285,7 @@ class ListenerConsumer(SyncConsumer):
         grSim.
         """
         if len(self.buffer) > 0:
-            self._send_buffered()
+            self._send_buffered(channel_name)
 
         self.socket.close()
 
@@ -269,17 +294,18 @@ class ListenerConsumer(SyncConsumer):
             "simulator",
             {
                 "type": "stop",
+                "channel_name": channel_name
             }
         )
 
-    def _send_buffered(self):
+    def _send_buffered(self, channel_name: str):
         """
         Sends the data that has been buffered to the client.
         :param channel_name: The channel name to send back to the client.
         :param buffer: The buffered data that has to be send.
         """
         async_to_sync(self.channel_layer.send)(
-            self.channel_name,
+            channel_name,
             {
                 "type": "forward.to.client",
                 "json": {
@@ -325,8 +351,7 @@ class ListenerConsumer(SyncConsumer):
         and its reply channel.
         """
         self._initialize()
-        self._setup_socket()
-        self.channel_name = message["channel_name"]
+        self._setup_socket(message["channel_name"])
 
         started = datetime.now()
         while datetime.now() < started + timedelta(
@@ -336,9 +361,9 @@ class ListenerConsumer(SyncConsumer):
             # TODO: Do something with the game state
 
             if len(self.buffer) >= settings.BUFFER_SIZE:
-                self._send_buffered()
+                self._send_buffered(message["channel_name"])
 
-        self._shutdown()
+        self._shutdown(message["channel_name"])
 
 
 class State(Enum):
@@ -388,7 +413,11 @@ class SimulateConsumer(SyncConsumer):
 
         # Prepare the C++ and start ROS and grSim
         print("Simulator: Start the preparation")
+
+        send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.GENERATING)
         edit_tree(message["values"])
+
+        send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.STARTING_SIMULATION)
         ros_pid = subprocess.Popen("roslaunch roboteam_tactics "
                                    "RTTCore_grsim.launch",
                                    stdout=open(os.devnull, 'w'),
@@ -426,6 +455,8 @@ class SimulateConsumer(SyncConsumer):
                                       shell=True,
                                       preexec_fn=os.setsid).pid
         print("Simulator: The simulation has started")
+
+        send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.SIMULATING)
         simulator_state = State.RUNNING
 
     def stop(self, message):
@@ -439,6 +470,8 @@ class SimulateConsumer(SyncConsumer):
         os.killpg(os.getpgid(tactic_pid), signal.SIGTERM)
         os.killpg(os.getpgid(ros_pid), signal.SIGTERM)
         os.killpg(os.getpgid(grsim_pid), signal.SIGTERM)
+
+        send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.FINISHED)
 
         print("Simulator: The simulator was stopped")
         simulator_state = State.READY

@@ -1,6 +1,7 @@
 from django.db import models
 from social_django.models import UserSocialAuth
 
+# Create your models here.
 NODE_TYPE_CHOICES = (
     ('0', 'Composite'),
     ('1', 'Decorator'),
@@ -8,7 +9,8 @@ NODE_TYPE_CHOICES = (
     ('3', 'Action'),
 )
 
-class custom_node(models.Model):
+
+class CustomNode(models.Model):
     name = models.CharField(max_length=30)
     type = models.CharField(max_length=1, choices=NODE_TYPE_CHOICES)
 

@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from .serializers import CustomNodeSerializer
 
 from .forms import TreeForm
-from .models import add_new_tree, Account, Tree, custom_node
+from .models import add_new_tree, Account, Tree, CustomNode
 
 
 # Create your views here.
@@ -83,5 +83,11 @@ class TreeView(View):
             return HttpResponse(400)
 
 class CustomNodeViewSet(viewsets.ModelViewSet):
-    queryset = custom_node.objects.all()
+    queryset = CustomNode.objects.all()
     serializer_class = CustomNodeSerializer
+
+class SimulatorView(View):
+    http_method_names = ['get']
+
+    def get(self, request: HttpRequest):
+        return render(request, "pages/frontend-simulator.html", {})

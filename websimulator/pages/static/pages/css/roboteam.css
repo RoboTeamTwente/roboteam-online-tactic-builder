@@ -78,10 +78,14 @@ body {
   flex-grow: 1;
 }
 
-.panel-show-other, .panel-switch {
+.panel-full-screen, .panel-hide {
   display: none;
 }
 
 iframe {
   border: none;
+}
+
+#panel-simulation {
+  display: none;
 }

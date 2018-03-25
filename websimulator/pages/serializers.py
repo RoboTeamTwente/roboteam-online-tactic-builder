@@ -1,7 +1,7 @@
-from .models import custom_node
+from .models import CustomNode
 from rest_framework import serializers
 
 class CustomNodeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = custom_node
+        model = CustomNode
         fields = ('name', 'type')
