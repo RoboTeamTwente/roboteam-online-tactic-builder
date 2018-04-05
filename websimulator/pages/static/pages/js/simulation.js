@@ -81,7 +81,7 @@ function runSimulation() {
     var ws = new WebSocket("ws://localhost:8000/");
     ws.onmessage = function (evt) {
         var data = JSON.parse(evt.data);
-
+        console.log(data);
         if ("simulator_output" in data.body) {
             for (i = 0; i < data.body.simulator_output.length; i++) {
                 queue.push(data.body.simulator_output[i])

@@ -35,9 +35,9 @@ class SimulationTestCase(TestCase):
                                                                     'yGoal': 1},
                                                      'display': {'x': 288,
                                                                  'y': 0},
-                                                     'title': 'GoToPos',
+                                                     'title': 'GoToPos_A',
                                                      'id': '05d86396-986a-42bd-b1b9-5c47e1d94e62'}},
-            'root': '05d86396-986a-42bd-b1b9-5c47e1d94e62'}},
+            }},
             'type': 'simulate',
             'channel_name': 'specific.ONGYcQVC!RIeWJnGgWjUC'}
 
@@ -52,20 +52,3 @@ class SimulationTestCase(TestCase):
         print("\n Testing correct tree...")
         completed_process = edit_tree(self.message_correct['values'])
         self.assertEqual(completed_process.returncode, 0)
-
-    def test_simulation(self):
-        """
-        Testing the simulation of a correct tactic
-        """
-        print("\n Testing simulation of correct tree...")
-        print("Starting ros and grsim")
-        ros = start_ros()
-        gr_sim = start_grsim()
-
-        print("Starting tactic")
-        completed_process = start_tactic()
-        self.assertEqual(completed_process.returncode, 0)
-
-        print("Tactic finished, closing grsim and ros")
-        os.killpg(os.getpgid(gr_sim.pid), signal.SIGTERM)
-        os.killpg(os.getpgid(ros.pid), signal.SIGTERM)
