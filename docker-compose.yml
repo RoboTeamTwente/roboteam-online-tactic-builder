@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  redis:
+    container_name: rtts_redis
+    image: redis
+  web:
+    container_name: rtts_web
+    build:
+      context: .
+      dockerfile: Dockerserver
+    command: python3 websimulator/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+  simulator:
+    container_name: rtts_sim
+    build:
+      context: .
+      dockerfile: Dockersimulator
+    command: python3 websimulator/manage.py runworker simulator
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+  listener:
+    container_name: rtts_lis
+    build:
+      context: .
+      dockerfile: Dockersimulator
+    command: python3 websimulator/manage.py runworker listener
+    volumes:
+      - .:/code
+    depends_on:
+      - redis

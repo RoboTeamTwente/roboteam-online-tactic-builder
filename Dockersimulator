@@ -1,0 +1,77 @@
+FROM ros:kinetic-ros-core-xenial
+RUN ./ros_entrypoint.sh
+
+# Now create the ros user itself
+RUN adduser --gecos "ROS User" --disabled-password ros
+RUN usermod -a -G dialout ros
+
+# And, as that user...
+USER ros
+
+# HOME needs to be set explicitly. Without it, the HOME environment variable is
+# set to "/"
+RUN HOME=/home/ros rosdep update
+
+# Create a ROS workspace for the ROS user.
+RUN mkdir -p /home/ros/workspace/src
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; catkin_init_workspace /home/ros/workspace/src'
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; catkin_make'
+
+
+# Switch back to root user
+USER root
+RUN echo "source /home/ros/workspace/devel/setup.bash" >> ~/.bashrc
+
+# Pull all the roboteam software from their git repository
+RUN /bin/bash -c 'cd /home/ros/workspace/src; git clone https://github.com/RoboteamTwente/roboteam_sync.git'
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install gitpython pygithub
+RUN cp /home/ros/workspace/src/roboteam_sync/rts.py /home/ros/workspace/rts.py
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; ./rts.py get <<< "HTTPS"; rm -rf src/roboteam_steering; rm -rf src/roboteam_tactics'
+
+# Install roboteam recommended tools
+RUN apt install -y libsdl2-2.0-0 libsdl2-dev libqt4-dev qt5-default libboost-all-dev ros-kinetic-uuid-msgs ros-kinetic-joy protobuf-c-compiler protobuf-compiler ros-kinetic-unique-id ros-kinetic-uuid-msgs
+RUN apt install -y ros-kinetic-actionlib ros-kinetic-rqt
+RUN apt install -y python-subprocess32 python-protobuf
+
+# Catkin_make the environment again
+# If the build fails then re-enable the first catkin_make command
+# RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; source devel/setup.bash; catkin_make; exit 0'
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; source devel/setup.bash; catkin_make'
+
+# Place tactics back
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; ./rts.py get <<< "HTTPS"; rm -rf src/roboteam_steering'
+
+# Create tactic file for the simulations
+ADD rtt_tactics.b3 /home/ros/workspace/src/roboteam_tactics/src/trees/projects/
+RUN sed -i 's/emiel/tactics/g' /home/ros/workspace/src/roboteam_tactics/src/trees/projects/CMakeLists.txt
+RUN touch /home/ros/workspace/src/roboteam_tactics/src/trees/projects/CMakeLists.txt
+
+# Aaaaand make it again, for some reason it works
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; source devel/setup.bash; catkin_make; exit 0'
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; source devel/setup.bash; catkin_make'
+
+# Pull the roboteam grSim
+RUN apt-get install -y git build-essential cmake libqt4-dev libgl1-mesa-dev libglu1-mesa-dev libprotobuf-dev protobuf-compiler libode-dev libboost-dev
+RUN /bin/bash -c 'cd /tmp; git clone https://github.com/szi/vartypes.git; cd vartypes; mkdir build; cd build; cmake ..; make; make install'
+RUN /bin/bash -c 'cd /home/ros/workspace; git clone https://github.com/RoboTeamTwente/grSim.git; cd grSim; git fetch; git checkout rtts-sim-listener; git pull'
+RUN /bin/bash -c 'cd /home/ros/workspace/grSim; mkdir build; cd build; cmake ..; make'
+
+# Django worker stuff
+ENV PYTHONUNBUFFERED 1
+
+RUN mkdir /code
+WORKDIR /code
+
+ADD req_simulator.txt /code/
+RUN pip3 install -r req_simulator.txt
+
+# Give all the users the right permissions
+RUN chmod -R 777 /home/ros/workspace/src
+
+# Switch to ros user
+USER ros
+
+# Add the ROS source files
+RUN echo "source /opt/ros/kinetic/setup.bash" >> /home/ros/.bashrc
+RUN echo "source /home/ros/workspace/devel/setup.bash" >> /home/ros/.bashrc
