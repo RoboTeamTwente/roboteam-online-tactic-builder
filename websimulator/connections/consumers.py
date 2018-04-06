@@ -417,14 +417,14 @@ class SimulateConsumer(SyncConsumer):
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.GENERATING)
         edit_tree(message["values"])
 
+        print("Done generating code")
+
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.STARTING_SIMULATION)
-        ros_pid = subprocess.Popen("roslaunch roboteam_tactics "
-                                   "RTTCore_grsim.launch",
-                                   stdout=open(os.devnull, 'w'),
-                                   shell=True,
-                                   preexec_fn=os.setsid).pid
-        grsim_pid = subprocess.Popen("~/catkin_ws/grSim/bin/grsim",
-                                     stdout=open(os.devnull, 'w'),
+        ros_pid = subprocess.Popen(['/bin/bash', '-c', "'/code/run_ros.bash'"], cwd="/home/ros/workspace", preexec_fn=os.setsid, stdout=open(os.devnull, 'w')).pid
+        print("Ros was started")
+
+        grsim_pid = subprocess.Popen("/home/ros/workspace/grSim/bin/grsim",
+                                     #stdout=open(os.devnull, 'w'),
                                      shell=True,
                                      preexec_fn=os.setsid).pid
 
@@ -448,12 +448,7 @@ class SimulateConsumer(SyncConsumer):
         global simulator_state
 
         print("Simulator: Run the tactic")
-        tactic_pid = subprocess.Popen("rosrun roboteam_tactics TestX " +
-                                      settings.PROJECT_NAME + "/" +
-                                      settings.TREE_NAME,
-                                      stdout=open(os.devnull, 'w'),
-                                      shell=True,
-                                      preexec_fn=os.setsid).pid
+        tactic_pid = subprocess.Popen(['/bin/bash', '-c', "'whoami'"], cwd="/home/ros/workspace", preexec_fn=os.setsid).pid
         print("Simulator: The simulation has started")
 
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.SIMULATING)
@@ -489,23 +484,24 @@ def edit_tree(values):
     tree["title"] = settings.TREE_NAME
 
     #For every node, change it's title to the name of the node and append a number
-    nodecounter = 0;
+    nodecounter = 0
     for node in tree["nodes"]:
         node_json = tree["nodes"][node]
         node_json["title"] = node_json["name"] + "_" + str(nodecounter)
         nodecounter += 1
 
-    print(tree)
-
     result = {'data': {'trees': [tree]}}
 
-    project_location = str(
-        Path.home()) + '/catkin_ws/src/roboteam_tactics/src/trees/projects/' + settings.PROJECT_NAME + ".b3"
+    project_location = '/home/ros/workspace/src/roboteam_tactics/src/trees/projects/' + settings.PROJECT_NAME + ".b3"
 
     new_project = open(project_location, 'w')
     new_project.write(json.dumps(result))
     new_project.close()
 
-    return subprocess.run("cd ~/catkin_ws && catkin_make",
-                          shell=True,
-                          stdout=open(os.devnull, 'w'))
+    print("JEROEN: Starting generating code")
+
+    return subprocess.run(['/bin/bash', '-c', "'/code/load_tree.bash'"], cwd="/home/ros/workspace", stdout=open(os.devnull, 'w'))
+
+    # "'. /opt/ros/kinetic/setup.bash; cd /home/ros/workspace; source devel/setup.bash; catkin_make'"])
+
+    #return subprocess.run(". /opt/ros/kinetic/setup.bash && . devel/setup.bash && catkin_make", cwd="/home/ros/workspace")
