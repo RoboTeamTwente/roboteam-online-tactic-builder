@@ -80,7 +80,6 @@ All Rights Reserved.
             });
 
             $("#btnRunSimulation").click(function () {
-                runSimulation();
                 showSinglePanel("#panel-simulation");
                 changeGuiStatus(AnimationStatus.SUBMITTED, getSimulator());
                 $("#btnRunSimulation").prop('disabled',true);
@@ -88,6 +87,7 @@ All Rights Reserved.
                 $("#btnNavSave").prop('disabled', true);
                 $("#btnGoogleLogin").prop('disabled', true);
                 $("#btnGoogleLogout").prop('disabled', true);
+                runSimulation();
             });
 
             // Save the current tree
@@ -126,11 +126,7 @@ All Rights Reserved.
 
                         if (frame.frame_number === -1) {
                             changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
-                            $("#btnRunSimulation").prop('disabled', false);
-                            $("#btnNavLoad").prop('disabled', false);
-                            $("#btnNavSave").prop('disabled', false);
-                            $("#btnGoogleLogin").prop('disabled', false);
-                            $("#btnGoogleLogout").prop('disabled', false);
+
                         } else {
                             getSimulator().field.components = frame;
                             getSimulator().field.draw();
