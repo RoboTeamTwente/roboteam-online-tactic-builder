@@ -80,9 +80,14 @@ All Rights Reserved.
             });
 
             $("#btnRunSimulation").click(function () {
-                runSimulation();
                 showSinglePanel("#panel-simulation");
                 changeGuiStatus(AnimationStatus.SUBMITTED, getSimulator());
+                $("#btnRunSimulation").prop('disabled',true);
+                $("#btnNavLoad").prop('disabled', true);
+                $("#btnNavSave").prop('disabled', true);
+                $("#btnGoogleLogin").prop('disabled', true);
+                $("#btnGoogleLogout").prop('disabled', true);
+                runSimulation();
             });
 
             // Save the current tree
@@ -121,6 +126,7 @@ All Rights Reserved.
 
                         if (frame.frame_number === -1) {
                             changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
+
                         } else {
                             getSimulator().field.components = frame;
                             getSimulator().field.draw();
@@ -163,14 +169,14 @@ All Rights Reserved.
 
             {% if backends.associated %}
                 <li class="nav-item">
-                    <button type="button" class="btn btn-roboteam-outline-inverted"
+                    <button id="btnNavSave" type="button" class="btn btn-roboteam-outline-inverted"
                             data-toggle="modal" data-target="#saveModal">
                         Save tree
                     </button>
                 </li>
 
                 <li class="nav-item">
-                    <button type="button" class="btn btn-roboteam-outline-inverted"
+                    <button id="btnNavLoad" type="button" class="btn btn-roboteam-outline-inverted"
                             data-toggle="modal" data-target="#loadModal">
                         Load tree
                     </button>
@@ -178,14 +184,14 @@ All Rights Reserved.
 
 
                 <li class="nav-item">
-                    <button type="button" class="btn btn-roboteam-outline-inverted"
+                    <button id="btnGoogleLogout" type="button" class="btn btn-roboteam-outline-inverted"
                             onclick="location.href='{% url 'logout' %}'">
                         Logout
                     </button>
                 </li>
             {% else %}
                 <li class="nav-item">
-                    <button type="button" class="btn btn-roboteam-outline-inverted"
+                    <button id="btnGoogleLogin" type="button" class="btn btn-roboteam-outline-inverted"
                             onclick="location.href='{% url 'social:begin' 'google-oauth2' %}'">
                         Sign in with Google
                     </button>

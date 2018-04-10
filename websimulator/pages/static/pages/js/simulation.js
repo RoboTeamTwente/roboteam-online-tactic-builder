@@ -69,6 +69,13 @@ var buffer_size = 30;
 function changeGuiStatus(status, simulator) {
     gui_status = status;
     AnimationStatus.properties[gui_status].action(simulator.showOverlay, simulator.hideOverlay);
+    if(status === AnimationStatus.FINISHED) {
+      $("#btnRunSimulation").prop('disabled', false);
+      $("#btnNavLoad").prop('disabled', false);
+      $("#btnNavSave").prop('disabled', false);
+      $("#btnGoogleLogin").prop('disabled', false);
+      $("#btnGoogleLogout").prop('disabled', false);
+    }
 }
 
 function runSimulation() {
@@ -78,31 +85,38 @@ function runSimulation() {
         "values": {"tree": JSON.parse(editor.exportToJSON())}
     };
 
-    var ws = new WebSocket("ws://localhost:8000/");
-    ws.onmessage = function (evt) {
-        var data = JSON.parse(evt.data);
+    if(myJSON['values']['tree']['root'] == null) {
+        alert("Tree must contain at least 1 node");
+        changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
+    } else {
 
+      var ws = new WebSocket("ws://localhost:8000/");
+      ws.onmessage = function (evt) {
+        var data = JSON.parse(evt.data);
+        console.log(data);
         if ("simulator_output" in data.body) {
-            for (i = 0; i < data.body.simulator_output.length; i++) {
-                queue.push(data.body.simulator_output[i])
-            }
+          for (i = 0; i < data.body.simulator_output.length; i++) {
+            queue.push(data.body.simulator_output[i])
+          }
         }
 
         if ("simulator_status" in data.body) {
-            if (data.body.simulator_status === AnimationStatus.FINISHED) {
-                queue.push({
-                    frame_number: -1
-                });
-                changeGuiStatus(AnimationStatus.SIMULATING, getSimulator());
-            } else {
-                changeGuiStatus(data.body.simulator_status, getSimulator());
-            }
+          if (data.body.simulator_status === AnimationStatus.FINISHED) {
+            queue.push({
+              frame_number: -1
+            });
+            changeGuiStatus(AnimationStatus.SIMULATING, getSimulator());
+          } else {
+            changeGuiStatus(data.body.simulator_status, getSimulator());
+          }
         }
-    };
-    ws.onclose = function (event) {
+      };
+      ws.onclose = function (event) {
         console.log(event)
-    };
-    ws.onopen = function () {
+      };
+      ws.onopen = function () {
         ws.send(JSON.stringify(myJSON));
-    };
+      };
+    }
+
 }

@@ -388,8 +388,6 @@ can later be retrieved and killed.
 """
 tactic_pid = -1
 grsim_pid = -1
-ros_pid = -1
-
 
 class SimulateConsumer(SyncConsumer):
     """
@@ -403,7 +401,6 @@ class SimulateConsumer(SyncConsumer):
         :param message: The standard consumer message.
         """
         global simulator_state
-        global ros_pid
         global grsim_pid
 
         # TODO: store this simulation request in a queue
@@ -418,13 +415,7 @@ class SimulateConsumer(SyncConsumer):
         edit_tree(message["values"])
 
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.STARTING_SIMULATION)
-        ros_pid = subprocess.Popen("roslaunch roboteam_tactics "
-                                   "RTTCore_grsim.launch",
-                                   stdout=open(os.devnull, 'w'),
-                                   shell=True,
-                                   preexec_fn=os.setsid).pid
         grsim_pid = subprocess.Popen("~/catkin_ws/grSim/bin/grsim",
-                                     stdout=open(os.devnull, 'w'),
                                      shell=True,
                                      preexec_fn=os.setsid).pid
 
@@ -445,13 +436,12 @@ class SimulateConsumer(SyncConsumer):
         :param message: Standard message of the consumer.
         """
         global tactic_pid
+        global keeper_pid
         global simulator_state
 
         print("Simulator: Run the tactic")
-        tactic_pid = subprocess.Popen("rosrun roboteam_tactics TestX " +
-                                      settings.PROJECT_NAME + "/" +
-                                      settings.TREE_NAME,
-                                      stdout=open(os.devnull, 'w'),
+
+        tactic_pid = subprocess.Popen("roslaunch roboteam_tactics KeeperVsGUITactic.launch",
                                       shell=True,
                                       preexec_fn=os.setsid).pid
         print("Simulator: The simulation has started")
@@ -468,7 +458,6 @@ class SimulateConsumer(SyncConsumer):
 
         print("Simulator: Stop the simulator")
         os.killpg(os.getpgid(tactic_pid), signal.SIGTERM)
-        os.killpg(os.getpgid(ros_pid), signal.SIGTERM)
         os.killpg(os.getpgid(grsim_pid), signal.SIGTERM)
 
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.FINISHED)
@@ -495,7 +484,6 @@ def edit_tree(values):
         node_json["title"] = node_json["name"] + "_" + str(nodecounter)
         nodecounter += 1
 
-    print(tree)
 
     result = {'data': {'trees': [tree]}}
 
@@ -508,4 +496,4 @@ def edit_tree(values):
 
     return subprocess.run("cd ~/catkin_ws && catkin_make",
                           shell=True,
-                          stdout=open(os.devnull, 'w'))
+                          )
