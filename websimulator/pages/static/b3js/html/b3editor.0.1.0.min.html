@@ -22,6 +22,84 @@
     </div>
   </div>
 </nav>
+<nav id="main-menu" class="top-bar" data-topbar role="navigation" data-options="is_hover: false">
+<section class="top-bar-section">
+        <ul class="left">
+            <li class="has-dropdown">
+                <a href="#">Edit</a>
+                <ul class="dropdown">
+                    <li>
+                        <a onclick="app.events.onButtonCopy()" href="#">
+                            <div class="clearfix"><span class="name">Copy</span> <span id="key_copy" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="app.events.onButtonCut()" href="#">
+                            <div class="clearfix"><span class="name">Cut</span> <span id="key_cut" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="app.events.onButtonPaste()" href="#">
+                            <div class="clearfix"><span class="name">Paste</span> <span id="key_paste" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="app.events.onButtonRemove()" href="#">
+                            <div class="clearfix"><span class="name">Remove</span> <span id="key_remove" class="key"></span></div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="has-dropdown">
+                <a href="#">View</a>
+                <ul class="dropdown">
+                    <li>
+                        <a onclick="app.events.onButtonAutoOrganize()" href="#">
+                            <div class="clearfix"><span class="name">Auto Organize</span> <span id="key_organize" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a onclick="app.events.onButtonZoomIn()" href="#">
+                            <div class="clearfix"><span class="name">Zoom In</span> <span id="key_zoom_in" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="app.events.onButtonZoomOut()" href="#">
+                            <div class="clearfix"><span class="name">Zoom Out</span> <span id="key_zoom_out" class="key"></span></div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="has-dropdown">
+                <a href="#">Selection</a>
+                <ul class="dropdown">
+                    <li>
+                        <a onclick="app.events.onButtonSelectAll()" href="#">
+                            <div class="clearfix"><span class="name">Select All</span> <span id="key_select_all" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="app.events.onButtonDeselectAll()" href="#">
+                            <div class="clearfix"><span class="name">Deselect All</span> <span id="key_deselect_all" class="key"></span></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="app.events.onButtonInvertSelection()" href="#">
+                            <div class="clearfix"><span class="name">Invert Selection</span> <span id="key_invert_selection" class="key"></span></div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+  <ul class="right">
+      <li>
+                <a
+        href="../guide" target="_blank">Help</a>
+</li>
+        </ul>
+    </section>
+</nav>
 <div id="modalAddNode" class="reveal-modal" data-reveal
      data-options="close_on_background_click: false; animation: fade; animation_speed: 150">
   <h2>Add Nodes</h2>
