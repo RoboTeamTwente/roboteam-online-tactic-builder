@@ -58,7 +58,6 @@ All Rights Reserved.
     <!-- Bind views to actions-->
     <script>
         $(function () {
-
             $('#message-text').keyup(function(e){
                 if(e.keyCode == 13)
                 {
@@ -108,8 +107,11 @@ All Rights Reserved.
                         break;
                     }
                 }
-                loadTree(getTree("{{ csrf_token }}", val));
-
+                if (val == null) {
+                    alert("Please select a tree");
+                } else {
+                    loadTree(getTree("{{ csrf_token }}", val));
+                }
             })
 
             getSimulator = function () {
