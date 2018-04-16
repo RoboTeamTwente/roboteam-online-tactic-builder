@@ -90,7 +90,7 @@ function runSimulation() {
         changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
     } else {
 
-      var ws = new WebSocket("ws://localhost:8000/");
+      var ws = new WebSocket("ws://" + window.location.hostname +  ":8000/");
       ws.onmessage = function (evt) {
         var data = JSON.parse(evt.data);
         console.log(data);
