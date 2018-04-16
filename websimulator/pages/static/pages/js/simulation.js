@@ -91,9 +91,9 @@ function runSimulation() {
     } else {
 
       var ws = new WebSocket("ws://" + window.location.hostname +  ":8000/");
+      buffer_size = 30;
       ws.onmessage = function (evt) {
         var data = JSON.parse(evt.data);
-        console.log(data);
         if ("simulator_output" in data.body) {
           for (i = 0; i < data.body.simulator_output.length; i++) {
             queue.push(data.body.simulator_output[i])
@@ -105,6 +105,7 @@ function runSimulation() {
             queue.push({
               frame_number: -1
             });
+            ws.close();
             changeGuiStatus(AnimationStatus.SIMULATING, getSimulator());
           } else {
             changeGuiStatus(data.body.simulator_status, getSimulator());
