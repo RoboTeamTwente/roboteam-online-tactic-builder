@@ -58,10 +58,12 @@ All Rights Reserved.
     <!-- Bind views to actions-->
     <script>
         $(function () {
-            $('#saveModal').on('shown.bs.modal', function () {
-                setTimeout(function () {
-                    $('#message-text').focus();
-                }, 1000);
+
+            $('#message-text').keyup(function(e){
+                if(e.keyCode == 13)
+                {
+                    $('#btnSave').trigger("click");
+                }
             });
 
             // Bind hide and switch buttons
@@ -255,7 +257,7 @@ All Rights Reserved.
 </div>
 
 <!-- Modal save -->
-<div class="modal fade" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
+<div class="modal fade" id="saveModal" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="background: #E2231A">
             <div class="modal-header">
@@ -273,7 +275,7 @@ All Rights Reserved.
                         <label style="color: white" for="message-text"
                                class="col-form-label">Tactic
                             name:</label>
-                        <textarea class="form-control" id="message-text"></textarea>
+                        <textarea autofocus class="form-control" id="message-text"></textarea>
                     </div>
                 </form>
             </div>
