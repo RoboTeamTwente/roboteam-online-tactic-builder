@@ -57,7 +57,7 @@ var AnimationStatus = {
         },
         8: {
             action: function(show, hide) {
-                show("The simulation has finished.", "primary");
+                show("The simulation has finished.", "success");
             }
         }
     }
@@ -86,10 +86,19 @@ function runSimulation() {
     };
 
     if(myJSON['values']['tree']['root'] == null) {
-        alert("Tree must contain at least 1 node");
+        $.notify({
+          // options
+          message: 'Tree must contain at least one node'
+        },{
+          // settings
+          type: 'warning',
+          placement: {
+            from: 'bottom'
+          }
+        });
         changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
     } else {
-
+      showSinglePanel("#panel-simulation");
       var ws = new WebSocket("ws://" + window.location.hostname +  ":8000/");
       buffer_size = 30;
       ws.onmessage = function (evt) {

@@ -47,6 +47,10 @@ All Rights Reserved.
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
 
+
+    <!-- JS for the panels -->
+    <script src="{% static "pages/js/bootstrap-notify.min.js" %}"></script>
+
     <!-- JS for the panels -->
     <script src="{% static "pages/js/panels.js" %}"></script>
 
@@ -81,7 +85,6 @@ All Rights Reserved.
             });
 
             $("#btnRunSimulation").click(function () {
-                showSinglePanel("#panel-simulation");
                 changeGuiStatus(AnimationStatus.SUBMITTED, getSimulator());
                 $("#btnRunSimulation").prop('disabled',true);
                 $("#btnNavLoad").prop('disabled', true);
@@ -108,7 +111,16 @@ All Rights Reserved.
                     }
                 }
                 if (val == null) {
-                    alert("Please select a tree");
+                    $.notify({
+                        // options
+                        message: 'Select a tree to be loaded'
+                    },{
+                        // settings
+                        type: 'warning',
+                        placement: {
+                          from: 'bottom'
+                        }
+                    });
                 } else {
                     loadTree(getTree("{{ csrf_token }}", val));
                 }

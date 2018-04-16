@@ -37,15 +37,43 @@ function saveTree(csrf_token, name) {
     },
     success: function (response) {
       if(parseInt(response,10) !== 200) {
-        alert("Invalid name or user!");
+        $.notify({
+          // options
+          message: 'Invalid name or user'
+        },{
+          // settings
+          type: 'warning',
+          placement: {
+            from: 'bottom'
+          }
+        });
       }
       else {
-        alert("Saved! It worked.");
+        $.notify({
+          // options
+          message: 'Tree saved!'
+        },{
+          // settings
+          type: 'success',
+          placement: {
+            from: 'bottom'
+          }
+        });
         location.reload();
       }
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
-      alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+      $.notify({
+          // options
+          message: 'Something went wrong...'
+        },{
+          // settings
+          type: 'danger',
+          placement: {
+            from: 'bottom'
+          }
+      });
+      // alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
     }
   });
 }
@@ -74,7 +102,18 @@ function getTree(csrf_token, name) {
       output = data;
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
-      alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+      $.notify({
+          // options
+          message: 'Something went wrong...'
+        },{
+          // settings
+          type: 'danger',
+          placement: {
+            from: 'bottom'
+          }
+      });
+      
+      // alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
     }
   });
   return output;
