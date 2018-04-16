@@ -10,7 +10,7 @@ from .serializers import CustomNodeSerializer
 from .forms import TreeForm
 from .models import add_new_tree, Account, Tree, CustomNode
 
-
+import os
 # Create your views here.
 
 
@@ -34,6 +34,16 @@ class EditorView(View):
     def get(self, request: HttpRequest):
         return render(request, "b3js/editor.html", {})
 
+
+class GuideView(View):
+    http_method_names = ['get']
+
+    def get(self, request: HttpRequest):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(dir_path + '/static/pages/res/guide.pdf', 'r') as pdf:
+            response = HttpResponse(pdf.read(), content_type='application/pdf')
+            response['Content-Disposition'] = 'inline;filename=guide.pdf'
+            return response
 
 class TreeView(View):
     http_method_names = ['get', 'post']
