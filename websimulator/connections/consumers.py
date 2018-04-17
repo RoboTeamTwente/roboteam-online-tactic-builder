@@ -345,8 +345,7 @@ class ListenerConsumer(SyncConsumer):
         listening to the simulator. The data will be listened to, filtered,
         squashed, buffered and lastly forwarded to the client.
 
-        TODO: Later on the game state must not only be saved, but also
-        analyzed for potential end states.
+        Later on the game state must not only be saved, but also analyzed for potential end states.
         :param message: The message containing information about the client
         and its reply channel.
         """
@@ -358,7 +357,7 @@ class ListenerConsumer(SyncConsumer):
                 seconds=settings.MAX_SIMULATION_TIME):
             frame = self._receive_frame()
 
-            # TODO: Do something with the game state
+            # Do something with the game state
 
             if len(self.buffer) >= settings.BUFFER_SIZE:
                 self._send_buffered(message["channel_name"])
