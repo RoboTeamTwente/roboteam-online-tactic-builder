@@ -14,5 +14,6 @@ urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path('editor/', EditorView.as_view(), name='editor'),
     path('simulator/', SimulatorView.as_view(), name='simulator'),
-    path('tree/', TreeView.as_view(), name='tree')
+    path('tree/', TreeView.as_view(), name='tree'),
+    path('guide/', GuideView.as_view(), name='guide')
 ]
