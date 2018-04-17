@@ -48,10 +48,8 @@ function saveTree(csrf_token, name) {
       }
       else {
         $.notify({
-          // options
           message: 'Tree saved!'
         }, {
-          // settings
           type: 'success',
           placement: {
             from: 'bottom'
