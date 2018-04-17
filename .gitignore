@@ -161,3 +161,6 @@ fabric.properties
 # Idea leftovers:
 .idea/misc.xml
 .idea/roboteam-tactic-builder.iml
+
+# Shell script output will be played in logs/
+logs/
