@@ -91,10 +91,8 @@ function showTrees(csrf_token) {
     success: function (data) {
       if (parseInt(data, 10) === 404) {
         $.notify({
-          // options
           message: 'No trees belonging to this account'
         }, {
-          // settings
           type: 'warning',
           placement: {
             from: 'bottom'
@@ -165,10 +163,8 @@ function getTree(csrf_token, name) {
     success: function (data) {
       output = data;
       $.notify({
-        // options
         message: 'Tree loaded!'
       }, {
-        // settings
         type: 'success',
         placement: {
           from: 'bottom'
