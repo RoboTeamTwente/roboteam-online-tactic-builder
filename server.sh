@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-nohup roslaunch roboteam_tactics TwoTeams.launch &> logs/roslaunch.out&
-nohup redis-server &> logs/redis.out&
-nohup python ./websimulator/manage.py runserver 0.0.0.0:8000 &> logs/server.out&
-nohup python ./websimulator/manage.py runworker simulator &> logs/simulator.out&
-nohup python ./websimulator/manage.py runworker listener &> logs/listener.out&
+DATETIME=`date '+%Y%m%d_%H_%M_%S'`
+
+mkdir -p logs/$DATETIME
+
+nohup roslaunch roboteam_tactics TwoTeams.launch &> logs/$DATETIME/roslaunch.out&
+nohup redis-server &> logs/$DATETIME/redis.out&
+nohup python ./websimulator/manage.py runserver 0.0.0.0:8000 &> logs/$DATETIME/server.out&
+nohup python ./websimulator/manage.py runworker simulator &> logs/$DATETIME/simulator.out&
+nohup python ./websimulator/manage.py runworker listener &> logs/$DATETIME/listener.out&
 
 
 
