@@ -72,8 +72,7 @@ function saveTree(csrf_token, name) {
           from: 'bottom'
         }
       });
-      // alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
-    }
+     }
   });
 }
 
