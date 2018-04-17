@@ -38,10 +38,8 @@ function saveTree(csrf_token, name) {
     success: function (response) {
       if (parseInt(response, 10) !== 200) {
         $.notify({
-          // options
           message: 'Invalid name or user'
         }, {
-          // settings
           type: 'warning',
           placement: {
             from: 'bottom'
@@ -63,10 +61,8 @@ function saveTree(csrf_token, name) {
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
       $.notify({
-        // options
         message: 'Something went wrong...'
       }, {
-        // settings
         type: 'danger',
         placement: {
           from: 'bottom'
@@ -135,10 +131,8 @@ function showTrees(csrf_token) {
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
       $.notify({
-        // options
         message: 'Something went wrong...'
       }, {
-        // settings
         type: 'danger',
         placement: {
           from: 'bottom'
@@ -185,10 +179,8 @@ function getTree(csrf_token, name) {
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
       $.notify({
-        // options
         message: 'Something went wrong...'
       }, {
-        // settings
         type: 'danger',
         placement: {
           from: 'bottom'
