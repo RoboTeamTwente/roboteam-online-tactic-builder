@@ -6,8 +6,6 @@ from .views import *
 
 app_name = 'pages'
 
-#router = routers.DefaultRouter()
-#router.register(r'custom_nodes', CustomNodeViewSet)
 
 urlpatterns = [
     path('custom_nodes/', CustomNodeViewSet.as_view({'get': 'list'}), name='custom_nodes'),
@@ -15,5 +13,6 @@ urlpatterns = [
     path('editor/', EditorView.as_view(), name='editor'),
     path('simulator/', SimulatorView.as_view(), name='simulator'),
     path('tree/', TreeView.as_view(), name='tree'),
-    path('guide/', GuideView.as_view(), name='guide')
+    path('guide/', GuideView.as_view(), name='guide'),
+    path('available_trees/', AvailableTrees.as_view(), name='available_trees'),
 ]

@@ -1,31 +1,23 @@
 import json
+import os
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views import View
-from social_django.models import UserSocialAuth
 from rest_framework import viewsets
-from .serializers import CustomNodeSerializer
+from social_django.models import UserSocialAuth
 
 from .forms import TreeForm
 from .models import add_new_tree, Account, Tree, CustomNode
+from .serializers import CustomNodeSerializer
 
 import os
 # Create your views here.
-
-
 class IndexView(View):
     http_method_names = ['get']
 
     def get(self, request: HttpRequest):
-        context = {"trees": []}
-
-        if request.user.is_authenticated and UserSocialAuth.objects.filter( \
-                user=request.user).exists():
-            context["trees"] = Account.objects.get(
-                user=UserSocialAuth.objects.get(
-                    user=request.user)).tree_set.all()
-        return render(request, "pages/interface.html", context)
+        return render(request, "pages/interface.html")
 
 
 class EditorView(View):
@@ -44,6 +36,7 @@ class GuideView(View):
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'inline;filename=guide.pdf'
             return response
+
 
 class TreeView(View):
     http_method_names = ['get', 'post']
@@ -71,8 +64,9 @@ class TreeView(View):
     def post(self, request: HttpRequest):
         data = json.loads(request.body.decode("utf-8"))
         form = TreeForm(data)
-        if form.is_valid() and UserSocialAuth.objects.filter( \
-                user=request.user).exists():
+        if form.is_valid() and \
+                UserSocialAuth.objects.filter(user=request.user).exists() and \
+                Account.objects.filter(user=UserSocialAuth.objects.get(user=request.user)).exists():
             tree = Tree.objects.filter(account=Account.objects.get(
                 user=UserSocialAuth.objects.get(user=request.user)),
                 name=form.cleaned_data["name"])
@@ -92,9 +86,28 @@ class TreeView(View):
         else:
             return HttpResponse(400)
 
+
 class CustomNodeViewSet(viewsets.ModelViewSet):
     queryset = CustomNode.objects.all()
     serializer_class = CustomNodeSerializer
+
+
+class AvailableTrees(View):
+    http_method_names = ['get']
+
+    """
+    Retrieves all the available trees for this user from the database
+    """
+    def get(self, request: HttpRequest):
+        if request.user.is_authenticated and \
+                UserSocialAuth.objects.filter(user=request.user).exists() and \
+                Account.objects.filter(user=UserSocialAuth.objects.get(user=request.user)).exists():
+            trees = Account.objects.get(user=UserSocialAuth.objects.get(user=request.user)).tree_set.all()
+            tree_names = [obj.name for obj in trees]
+            return HttpResponse(json.dumps({"data": tree_names}), content_type='application/json')
+        else:
+            return HttpResponse(404)
+
 
 class SimulatorView(View):
     http_method_names = ['get']

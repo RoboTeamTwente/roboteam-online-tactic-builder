@@ -6,9 +6,9 @@ mkdir -p logs/$DATETIME
 
 nohup roslaunch roboteam_tactics TwoTeams.launch &> logs/$DATETIME/roslaunch.out&
 nohup redis-server &> logs/$DATETIME/redis.out&
-nohup python ./websimulator/manage.py runserver 0.0.0.0:8000 &> logs/$DATETIME/server.out&
-nohup python ./websimulator/manage.py runworker simulator &> logs/$DATETIME/simulator.out&
-nohup python ./websimulator/manage.py runworker listener &> logs/$DATETIME/listener.out&
+nohup python3 ./websimulator/manage.py runserver 0.0.0.0:8000 &> logs/$DATETIME/server.out&
+nohup python3 ./websimulator/manage.py runworker simulator &> logs/$DATETIME/simulator.out&
+nohup python3 ./websimulator/manage.py runworker listener &> logs/$DATETIME/listener.out&
 
 
 

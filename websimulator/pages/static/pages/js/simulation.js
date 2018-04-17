@@ -87,10 +87,8 @@ function runSimulation() {
 
     if(myJSON['values']['tree']['root'] == null) {
         $.notify({
-          // options
           message: 'Tree must contain at least one node'
         },{
-          // settings
           type: 'warning',
           placement: {
             from: 'bottom'

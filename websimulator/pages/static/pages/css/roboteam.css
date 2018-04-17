@@ -32,6 +32,9 @@ body {
   color: #E2231A;
 }
 
+.btn:focus {
+  box-shadow: none;
+}
 /* Flex-grow */
 .flex-grow {
   flex-grow: 1;
