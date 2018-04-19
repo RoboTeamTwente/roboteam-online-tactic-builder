@@ -11,6 +11,7 @@ import subprocess
 from datetime import datetime, timedelta
 import socket
 import struct
+import shutil
 from enum import Enum
 from pathlib import Path
 
@@ -417,6 +418,32 @@ class SimulateConsumer(SyncConsumer):
         edit_tree(message["values"])
 
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.STARTING_SIMULATION)
+
+        # --- set assignment ID ---
+        print("Simulator: writing assignment id to mainwindow.cpp")
+        # define path to file
+        file_path = os.path.expanduser("~/catkin_ws/grSim/src/mainwindow.cpp")
+        from_file = open(file_path, mode="r")
+        # remove first line
+        from_file.readline()
+        # read rest of the file
+        contents = from_file.readlines()
+        # new first line
+        line = "#define ASSIGNMENT_ID " + assignment_id + "\n"
+        # remove original file
+        os.remove(file_path)
+        # open new file
+        to_file = open(file_path, mode="w")
+        # write new first line
+        to_file.write(line)
+        # write the rest of the original file
+        to_file.writelines(contents)
+        to_file.close()
+        print("Simulator: making grSim")
+        subprocess.Popen("cd ~/catkin_ws/grSim/build && make", shell=True).wait()
+
+        # --- set assignment ID ---
+
         grsim_pid = subprocess.Popen("~/catkin_ws/grSim/bin/grsim",
                                      shell=True,
                                      preexec_fn=os.setsid).pid
@@ -443,7 +470,7 @@ class SimulateConsumer(SyncConsumer):
 
         print("Simulator: Run the tactic")
 
-        tactic_pid = subprocess.Popen("roslaunch roboteam_tactics KeeperVsGUITactic.launch",
+        tactic_pid = subprocess.Popen("roslaunch roboteam_tactics GUITactic.launch",
                                       shell=True,
                                       preexec_fn=os.setsid).pid
         print("Simulator: The simulation has started")
