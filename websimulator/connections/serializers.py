@@ -47,8 +47,9 @@ class ProtocolSerializer(Serializer):
         """
         sv_serializer = SimValuesSerializer(data=values)
         sv_serializer.is_valid(raise_exception=True)
-
-        return sv_serializer.validated_data
+        data = sv_serializer.validated_data
+        data.update({"assignment_id": values["assignment_id"]})
+        return data
 
     def stop_sim(self, values):
         """

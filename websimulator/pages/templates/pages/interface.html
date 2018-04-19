@@ -94,7 +94,9 @@ All Rights Reserved.
                 $("#btnNavSave").prop('disabled', true);
                 $("#btnGoogleLogin").prop('disabled', true);
                 $("#btnGoogleLogout").prop('disabled', true);
-                runSimulation();
+                var assignmentId = $('#assignment-selector').val();
+                console.log("Assignment ID: " + assignmentId);
+                runSimulation(assignmentId);
             });
 
             // Show all the trees available for this user
@@ -185,42 +187,20 @@ All Rights Reserved.
     <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
         <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
             <li class="nav-item">
+              <select id="assignment-selector">
+                <option value="0">Assignment 0</option>
+                <option value="1">Assignment 1</option>
+                <option value="2">Assignment 2</option>
+                <option value="3">Assignment 3</option>
+                <option value="4">Assignment 4</option>
+                <option value="5">Assignment 5</option>
+              </select>
+            </li>
+            <li class="nav-item">
                 <button type="button" class="btn btn-roboteam-outline-inverted"
-                        id="btnRunSimulation">Run
-                    Simulation
+                        id="btnRunSimulation">Run Simulation
                 </button>
             </li>
-            <!-- Check whether the user is logged in  -->
-            {% if backends.associated %}
-                <li class="nav-item">
-                    <button id="btnNavSave" type="button" class="btn btn-roboteam-outline-inverted"
-                            data-toggle="modal" data-target="#saveModal">
-                        Save tree
-                    </button>
-                </li>
-
-                <li class="nav-item">
-                    <button id="btnNavLoad" type="button" class="btn btn-roboteam-outline-inverted"
-                            data-toggle="modal" data-target="#loadModal">
-                        Load tree
-                    </button>
-                </li>
-
-
-                <li class="nav-item">
-                    <button id="btnGoogleLogout" type="button" class="btn btn-roboteam-outline-inverted"
-                            onclick="location.href='{% url 'logout' %}'">
-                        Logout
-                    </button>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <button id="btnGoogleLogin" type="button" class="btn btn-roboteam-outline-inverted"
-                            onclick="location.href='{% url 'social:begin' 'google-oauth2' %}'">
-                        Sign in with Google
-                    </button>
-                </li>
-            {% endif %}
         </ul>
     </div>
 </nav>

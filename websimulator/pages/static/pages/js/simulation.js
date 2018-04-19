@@ -78,11 +78,11 @@ function changeGuiStatus(status, simulator) {
     }
 }
 
-function runSimulation() {
+function runSimulation(assignmentId) {
     var editor = document.getElementById("b3js-editor").contentWindow.app.view;
     var myJSON = {
         "action": "SIM",
-        "values": {"tree": JSON.parse(editor.exportToJSON())}
+        "values": {"tree": JSON.parse(editor.exportToJSON()), "assignment_id": assignmentId}
     };
 
     if(myJSON['values']['tree']['root'] == null) {

@@ -92,3 +92,18 @@ iframe {
 #panel-simulation {
   display: none;
 }
+
+#assignment-selector {
+  height: 38px;
+  border-radius: 5px;
+  background-color: #e2231a;
+  border-color: white;
+  color: white;
+  margin-right: 5px;
+  padding: 5px;
+}
+
+#assignment-selector:hover {
+  color: #e2231a;
+  background-color: white;
+}

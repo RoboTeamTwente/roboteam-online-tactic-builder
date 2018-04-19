@@ -388,6 +388,7 @@ can later be retrieved and killed.
 tactic_pid = -1
 grsim_pid = -1
 
+
 class SimulateConsumer(SyncConsumer):
     """
     Background consumer that will prepare, start and close the simulator.
@@ -409,6 +410,8 @@ class SimulateConsumer(SyncConsumer):
 
         # Prepare the C++ and start ROS and grSim
         print("Simulator: Start the preparation")
+
+        assignment_id = message["values"]["assignment_id"]
 
         send_simulation_status(self.channel_layer, message["channel_name"], SimulationStatus.GENERATING)
         edit_tree(message["values"])
