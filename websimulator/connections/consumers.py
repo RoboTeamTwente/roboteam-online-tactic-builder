@@ -14,6 +14,7 @@ import struct
 import shutil
 from enum import Enum
 from pathlib import Path
+from time import sleep
 
 import time
 
@@ -470,6 +471,9 @@ class SimulateConsumer(SyncConsumer):
 
         print("Simulator: Run the tactic")
 
+        # give the grsim the time to let the ball land. Otherwise behaviour is unstable
+        sleep(1) # seconds
+
         tactic_pid = subprocess.Popen("roslaunch roboteam_tactics GUITactic.launch",
                                       shell=True,
                                       preexec_fn=os.setsid).pid
@@ -512,7 +516,6 @@ def edit_tree(values):
         node_json = tree["nodes"][node]
         node_json["title"] = node_json["name"] + "_" + str(nodecounter)
         nodecounter += 1
-
 
     result = {'data': {'trees': [tree]}}
 

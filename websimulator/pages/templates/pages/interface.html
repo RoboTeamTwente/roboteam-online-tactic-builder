@@ -95,7 +95,6 @@ All Rights Reserved.
                 $("#btnGoogleLogin").prop('disabled', true);
                 $("#btnGoogleLogout").prop('disabled', true);
                 var assignmentId = $('#assignment-selector').val();
-                console.log("Assignment ID: " + assignmentId);
                 runSimulation(assignmentId);
             });
 
@@ -139,6 +138,11 @@ All Rights Reserved.
                 return $("#simulator")[0].contentWindow;
             };
 
+            // Checks if the x and y coordinates are inside the goal of the right/bottom team
+            function isBallInGoal(x, y) {
+                return x > 4500 && (y > -500 || y < 500);
+            }
+
             // Pulls the data from the queue 58 times per second
             // Forwards this data to the visualizer
             // Triggers the GUI to go to the final state when the queue is empty
@@ -149,10 +153,10 @@ All Rights Reserved.
                         buffer_size += 60;
                     } else {
                         frame = queue.shift();
-
                         if (frame.frame_number === -1) {
                             changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
-
+                        // } else if (isBallInGoal(frame.ball.x, frame.ball.y)) {
+                            // changeGuiStatus(AnimationStatus.FINISHED, getSimulator());
                         } else {
                             getSimulator().field.components = frame;
                             getSimulator().field.draw();
@@ -188,12 +192,12 @@ All Rights Reserved.
         <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
             <li class="nav-item">
               <select id="assignment-selector">
-                <option value="0">Assignment 0</option>
-                <option value="1">Assignment 1</option>
-                <option value="2">Assignment 2</option>
-                <option value="3">Assignment 3</option>
-                <option value="4">Assignment 4</option>
-                <option value="5">Assignment 5</option>
+                <option value="0">Assignment 1</option>
+                <option value="1">Assignment 2</option>
+                <option value="2">Assignment 3a</option>
+                <option value="3">Assignment 3b</option>
+                <option value="4">Assignment 4a</option>
+                <option value="5">Assignment 4b</option>
               </select>
             </li>
             <li class="nav-item">
